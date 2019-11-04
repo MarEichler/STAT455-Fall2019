@@ -1,0 +1,202 @@
+\documentclass[12pt, letterpaper]{article}
+
+\input{C:/Users/MarEichler17/Documents/MYE-Documents/SCHOOL/Northwestern/preamble}
+ 
+
+
+
+ %line spacing
+ \usepackage{setspace}
+ \setstretch{1.2}
+ 
+ %header, pagestyle
+ \geometry{pass, letterpaper}
+ \pagestyle{fancy}
+ \fancyhf{} % sets both header and footer to nothing
+ \renewcommand{\headrulewidth}{0pt}
+ \lhead{STAT 455 Fall 2019 \\ Homework 03}
+ \rhead{Martha Eichlersmith \\ Page \thepage \text{ of} \pageref{LastPage}}
+ \setlength{\headsep}{48pt}
+ \renewcommand{\sectionmark}[1]{\gdef\currsection{\thesection \ #1}}
+ \renewcommand{\subsectionmark}[1]{\markright{\currsection\ $\mid$ \thesubsection \  #1}}
+
+
+
+\begin{document}
+
+\subsection*{Problem {\#}2.3}  
+% latex table generated in R 3.6.1 by xtable 1.8-4 package
+% Tue Oct 22 11:35:15 2019
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{rll}
+		\hline
+		& Statistic & Value \\ 
+		\hline
+		1 & Difference in Proportion & 0.0085 \\ 
+		2 & Relative Risk & 7.8970 \\ 
+		3 & Odds Ratio (OR) & 7.9649 \\ 
+		\hline
+	\end{tabular}
+\end{table}
+\textbf{Interpretations:} 
+\begin{itemize}
+	\item \textit{Difference in Proportion:} The proportion for fatal injuries when a seat belt is not used is 0.0085 more than the proportion of fatal injuries when a seat belt is used.   
+	\item \textit{Relative Risk:} The proportion of fatal injuries when a seat belt is not used is 7.8970 times that of the proportion of fatal injuries when a seat belt is used.    
+	\item \textit{Odds Ratio (OR):} The odds of fatal injury when a seat belt is not used is 7.9649 times that of the odds of fatal injury when a seat belt is used.  
+\end{itemize}
+The OR and the Relative Risk are similar to each other which makes sense because the difference in proportions is small and the event is rare.  
+ 
+
+
+\subsection*{Problem {\#}2.8}
+
+\subsubsection*{Problem {\#}2.8a} 
+Correct interpretation of OR: The odds of survival for females is 11.4 times that of the odds of survival for males.  
+
+The interpretation ``The probability of survival for females was 11.4 times that for males" would be approximately correct if the difference between proportions was small, i.e. the OR would approximately equal the relative risk.
+  
+\subsubsection*{Problem {\#}2.8b}
+% latex table generated in R 3.6.1 by xtable 1.8-4 package
+% Tue Oct 22 12:06:54 2019
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{rll}
+		\hline
+		& Gender & Proportion Survived \\ 
+		\hline
+		1 & Female & 0.7436 \\ 
+		2 & Male & 0.2028 \\ 
+		\hline
+	\end{tabular}
+\end{table}
+
+\newpage 
+\subsection*{Problem {\#}2.12}  
+% latex table generated in R 3.6.1 by xtable 1.8-4 package
+% Tue Oct 22 15:41:49 2019
+	\begin{tabular}{rll}
+		\hline
+		& Department & Conditional OR \\ 
+		\hline
+		1 & A & 0.3492 \\ 
+		2 & B & 0.8025 \\ 
+		3 & C & 1.1331 \\ 
+		4 & D & 0.9213 \\ 
+		5 & E & 1.2216 \\ 
+		6 & F & 0.8279 \\ 
+		\hline
+	\end{tabular}
+\hfill 
+% latex table generated in R 3.6.1 by xtable 1.8-4 package
+% Tue Oct 22 15:41:49 2019
+	\begin{tabular}{rl}
+		\hline
+		& Marginal OR \\ 
+		\hline
+		1 & 1.8411 \\ 
+		\hline
+	\end{tabular}
+\hfill \phant \\
+
+% latex table generated in R 3.6.1 by xtable 1.8-4 package
+% Wed Oct 23 12:57:20 2019
+\begin{wraptable}{r}{2in}
+	\vspace{-24pt} 
+	\begin{tabular}{rll}
+		\hline
+		& Department & Corner OR \\ 
+		\hline
+		1 & A & 6.9835 \\ 
+		2 & B & 20.4783 \\ 
+		3 & C & 0.5010 \\ 
+		4 & D & 1.0166 \\ 
+		5 & E & 0.4443 \\ 
+		\hline
+	\end{tabular}
+\end{wraptable}
+
+The Conditional OR for each department is less than the marginal OR.  This is due to an association between Gender and Department (i.e. Department is an effect modifier).  This can be shown by calculating the corner OR using Female and Department F as the baseline, shown in the table to the right.  
+
+
+
+\subsection*{Problem {\#}2.19}  
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{rlll}
+		\hline
+		& Statistic & Value & 95\% CI\\ 
+		\hline
+		1 & Gamma, $\gamma$ & 0.3604 &\ (0.1401, 0.5806)\\ 
+		2 & Kappa, $\kappa$ & 0.1293 & (-0.0051, 0.2638)\\ 
+		\hline
+	\end{tabular}
+\end{table}
+
+Since gamma is 0.3604, this indicates that of the couples who disagree, the proportion of concordant couples is larger than those of discordant couples.  This means that the wives rating is usually high when the husband's rating is high.
+
+If there is more agreement, Kappa will get closer to one.  However, if Kappa negative that indicates that agreement is weaker than agreement by chance (the two disagree more).  Since Kappa is fairly small (0.1293) and the 95\% CI dips into the negative numbers - this shows that there isn't strong agreement between ratings for husbands and wives.  
+
+\newpage  
+\subsection*{Problem {\#}2.39}  
+\[
+\lambda  = \frac{ V(Y) - \Ex{ V(Y \mid X)} }{ V(Y)} \quad \text{where} \quad 
+V(Y) = 1 - \max(\pi_{+j}) \quad \text{and} \quad 
+V(Y \mid X= i )  = 1 - \max_j(\pi_{ij}) 
+\] \vspace{-24pt} 
+\begin{flalign*}
+\omit\rlap{\underline{Show: $\independent = 0 \implies \lambda = 0$}} \\
+\omit\rlap{Note: $\lambda = 0 \iff V(Y) -  \Ex{ V(Y \mid X)} = 0 $}  
+\\[0.5ex]
+V(Y) - \Ex{ V(Y \mid X)} & = 
+	\left( 1 - \max_j \left\{ \pi_{+j} \right\} \right)
+	- 
+	\Ex{ 1 -  \max_j \left\{ \pi_{j \mid X=i } \right\} }
+\\[0.5ex]
+& = \Ex{ \max_j \left\{ \pi_{j \mid X = i}   \right\}} - \max_j \left\{ \pi_{+j} \right\}
+\\[0.5ex]
+& = \sum_i \pi_{i+} \max_j \left\{ \pi_{j \mid i } \right\} -  \max_j \left\{ \pi_{+j} \right\}
+\\[0.5ex]
+& = \sum_i \pi_{i+} \max_j \left\{ \frac{\pi_{ij}}{\pi_{i+}} \right\} - \max_j \left\{ \pi_{+j} \right\}
+\\[0.5ex]
+& = \sum_i \max_j \left\{ \pi_{ij}  \right\} - \max_j \left\{ \pi_{+j} \right\} & (\ast)
+\\[1ex]
+X \independent Y &\implies \pi_{ij} = \pi_{i+} \cdot \pi_{j+} \quad \quad \text{(plug this into $(\ast)$)} 
+\\[0.5ex]
+V(Y) - \Ex{ V(Y \mid X)} & = \sum_i \max_j \left\{ \pi_{i+} \cdot \pi_{j+} \right\} - \max_j \left\{ \pi_{+j} \right\}
+\\
+& = \sum_i \pi_{i+} \max_j \left\{ \pi_{+j} \right\} - \max_j \left\{ \pi_{+j} \right\} & \sum_i \pi_{i+} = 1 
+\\
+& = \max_j \left\{ \pi_{+j} \right\} - \max_j \left\{ \pi_{+j} \right\} = 0 
+\\
+\implies \lambda & = 0 
+\end{flalign*}
+\underline{Show $\lambda = 0 \centernot\implies \independent$} \\
+$\lambda = 0 \iff \sum_i \max_j \left\{ \pi_{ij}  \right\} - \max_j \left\{ \pi_{+j} \right\} \centernot\implies  X \independent Y$ \\ 
+\begin{wraptable}{r}{2in} 
+	\vspace{-24pt} 
+	\begin{tabular}{c c  c c c |c }
+&&  \multicolumn{3}{c}{Y}& \\
+&& $j=1$ & $j=2$ & $j=3$ &\\
+\multirow{2}{*}{X} & $i=1$ & 0.4 & 0.1 & 0.1 & 0.6 \\
+&					$i=2$ & 0.2 & 0.1 & 0.1 & 0.4 \\
+\hline 
+&						  & 0.6 & 0.2 & 0.2 & 
+	\end{tabular}
+\end{wraptable}
+\vspace{-36pt} 
+\begin{flalign*}
+\textstyle\sum_i \max_j \left\{ \pi_{ij}  \right\} & = 0.4+0.2 = 0.6  &\\
+\textstyle\max_j \left\{ \pi_{+j} \right\} & = \max(0.6, 0.2, 0.2) = 0.6 \\
+\pi_{1+} & = 0.6 \quad \text{and} \quad \pi_{+1}  = 0.6 \\
+\end{flalign*} \vspace{-48pt} \\
+$\pi_{11} = 0.4 \neq 0.36 = \pi_{1+} \pi_{+1} \implies X \centernot\independent Y$ 
+
+
+\end{document}
+
+
+
+%  \text{\textcolor{red}{$$}}
+%  \text{\textcolor{blue}{$$}}
+%  \text{\textcolor{Green}{$$}}

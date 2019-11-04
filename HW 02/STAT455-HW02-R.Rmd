@@ -1,0 +1,217 @@
+---
+output:
+  pdf_document:
+    fig_caption: yes
+header-includes:
+  - \usepackage{color}
+  - \usepackage{mathtools}
+---
+```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+library(ggplot2)
+library(readr)
+library(gridExtra)
+library(grid)
+library(png)
+library(downloader)
+library(grDevices)
+library(latex2exp)
+library(knitr)
+library(leaps)
+library(directlabels)
+library(diffusr)
+library(MASS)
+library(invgamma)
+library(condMVNorm)
+library(MonteCarlo)
+library(xtable)
+library(polynom)
+```
+
+
+# STAT 455 Homework 02 - R Code  
+*Martha Eichlersmith*  
+2019-10-17
+
+### Problem 1.b
+```{r}
+SampleSize <- c(rep(75, 4), rep(rep(250, 5)))
+l.b <- length(SampleSize)
+pi.T1 <- c(1/3, 1/4, 1/6, 0.2, 1/3, 0.3, 0.22  , 0.250, 0.22)
+pi.T2 <- c(1/3, 1/4, 3/6, 0.3, 1/3, 0.3, 0.4467, 0.300, 0.40)
+pi.T3 <- c(1/3, 2/4, 2/6, 0.5, 1/3, 0.4, 0.3333, 0.450, 0.38)
+P.R <- c(rep("N/A", l.b))
+aP.R <- c(rep("N/A", l.b))
+P.U <- c(rep("N/A", l.b))
+aP.U <- c(rep("N/A", l.b))
+q.R <- qchisq(0.95, df=1) #3.8415
+q.U <- qchisq(0.95, df=2) #5.9915
+it <- 10000
+
+#function for restricted lambda
+func_lambda.R <- function(n, pib){
+lambda.R <- ((n*pib[1]+n*pib[2]- (2/3)*n))^2 / ((2/9)*n)
+return(lambda.R)}
+
+#function for unrestricted lambda
+func_lambda.U <- function(n, pib){
+lambda.U <- 3*n*(sum( (pib - (1/3))*(pib-(1/3)) ) )
+return(lambda.U)}
+
+#function for approximate restricted p-value 
+func_aP.R <- function(n, pib, q.R){
+lambda.R <- func_lambda.R(n, pib)
+return(1-pchisq(q.R, df=1, lambda.R))}
+
+#function for approximate unrestricted p-value 
+func_aP.U <- function(n, pib, q.U){
+lambda.U <- func_lambda.U(n, pib)
+return(1-pchisq(q.U, df=2, lambda.U))}
+
+#function for estimating exact  restricted p-value 
+func_P.R <- function(it, n, pib, q.R){
+S.2.R <- c()
+for (j in 1:it){
+y <- rmultinom(1, n, pib)
+score.R <- ((y[1]+y[2]- (2/3)*n))^2 / ((2/9)*n)
+S.2.R <- c(score.R, S.2.R)
+count <- length(S.2.R[S.2.R >= q.R])
+total <- length(S.2.R)
+P.R <- count/total}
+return(P.R)}
+```
+
+\newpage 
+```{r}
+#function for estimating exact  unrestricted p-value 
+func_P.U <- function(it, n, pib, q.U){
+S.2.U <- c()
+for (j in 1:it){
+y <- rmultinom(1, n, pib)
+score.U <- (y[1] - n/3)^2/(n/3) + (y[2] - n/3)^2/(n/3) + (y[3] - n/3)^2/(n/3)
+S.2.U <- c(score.U, S.2.U)
+count <- length(S.2.U[S.2.U >= q.U])
+total <- length(S.2.U)
+P.U <- count/total
+paste(P.U)}
+return(P.U)}
+```
+
+
+```{r}
+#for loop to calculate approximate p-values for restricted and unrestricted
+set.seed(1017)
+l <- length(pi.T1)
+for (i in 1:l.b){
+  n <- SampleSize[i]
+  pib <- c(pi.T1[i], pi.T2[i], pi.T3[i])
+  aP.R[i] <- format(round(func_aP.R(n, pib, q.R), 4), nsmall=4)
+  aP.U[i] <- format(round(func_aP.U(n, pib, q.U), 4), nsmall=4)
+  P.R[i] <-  format(round(func_P.R(it, n, pib, q.R), 4), nsmall=4)
+  P.U[i] <-  format(round(func_P.U(it, n, pib, q.U), 4), nsmall=4)
+  }
+
+Table1b <- data.frame(
+   "Sample.Size" = format(SampleSize, 0)
+  ,"pi.T1" = format(pi.T1, 4)
+  ,"pi.T2" = format(pi.T2, 4)
+  ,"pi.T3" = format(pi.T3, 4)
+  ,"P.R" = P.R
+  ,"aP.R" = aP.R
+  ,"P.U" = P.U
+  ,"aP.U" = aP.U)
+
+kable(Table1b)
+
+```
+```{r, echo=FALSE, eval=FALSE }
+xtable(Table1b)
+```
+
+
+\newpage 
+### Problem 1.c
+```{r}
+pi.T1 <- c(1/3, 1/4, 1/6, 0.2, 0.3, 0.22  , 0.250, 0.22)
+pi.T2 <- c(1/3, 1/4, 3/6, 0.3, 0.3, 0.4467, 0.300, 0.40)
+pi.T3 <- c(1/3, 2/4, 2/6, 0.5, 0.4, 0.3333, 0.450, 0.38)
+l.c <- length(pi.T1)
+n.R <- c(rep("N/A", l.c))
+n.U <- c(rep("N/A", l.c))
+
+```
+
+```{r}
+lambda.R80 <- 7.84886
+lambda.U80 <- 9.63469
+
+1-pchisq(q.R, df=1, lambda.R80)
+1-pchisq(q.U, df=2, lambda.U80)
+```
+
+```{r}
+func_n.R <- function(pib, lambdaRU80){
+n.R <- lambda.R80 / func_lambda.R(1, pib)
+return(n.R)}
+
+func_n.U <- function(pib, lambda.U80){
+n.U <- lambda.U80 / func_lambda.U(1, pib)
+return(n.U)}
+```
+
+```{r, echo=FALSE, eval=FALSE}
+#old
+func_n.R <- function(pib){
+x <- qchisq(.8, df=1, ncp=q.R)
+num <- (2/9)*x
+denom <- (pib[1] + pib[2] -(2/3))^2 
+n.R <- num/denom
+return(n.R)}
+
+
+
+#function for calculating sample size for unrestricted 
+func_n.U <- function(pib){
+x <- qchisq(.8, df=2, ncp=q.U)
+num <- (1/3)*x
+denom <- (pib[1] - (1/3))^2 + (pib[2] - (1/3))^2 + (pib[3] - (1/3))^2 
+n.U <- num/denom
+return(n.U)}
+```
+
+
+```{r}
+#for loop to calculate approximate p-values for restricted and unrestricted
+set.seed(1017)
+for (i in 1:l.c){
+  pib <- c(pi.T1[i], pi.T2[i], pi.T3[i])
+  n.R[i] <- format(ceiling(func_n.R(pib, lambda.R80)), 0)
+  n.U[i] <- format(ceiling(func_n.U(pib, lambda.U80)), 0)}
+
+Table1c <- data.frame(
+   "pi.T1" = format(pi.T1, 4)
+  ,"pi.T2" = format(pi.T2, 4)
+  ,"pi.T3" = format(pi.T3, 4)
+  ,"n.R" = n.R
+  ,"n.U" = n.U
+  )
+kable(Table1c)
+```
+
+
+```{r, echo=FALSE, eval=FALSE }
+xtable(Table1c)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

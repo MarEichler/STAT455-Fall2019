@@ -1,0 +1,142 @@
+---
+output:
+  pdf_document:
+    fig_caption: yes
+header-includes:
+  - \usepackage{color}
+  - \usepackage{mathtools}
+---
+```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+library(ggplot2)
+library(readr)
+library(gridExtra)
+library(grid)
+library(png)
+library(downloader)
+library(grDevices)
+library(latex2exp)
+library(knitr)
+library(leaps)
+library(directlabels)
+library(diffusr)
+library(MASS)
+library(invgamma)
+library(condMVNorm)
+library(MonteCarlo)
+library(xtable)
+library(polynom)
+decimal <- function(x, k) trimws(format(round(x, k), nsmall=k))
+dec <- 4
+```
+
+
+# STAT 455 Homework 03 - R Code  
+*Martha Eichlersmith*  
+2019-10-24
+
+### Problem 2.3
+```{r}
+#R = seat belt (risk),  R.y = no seat belt, R.n = seat belt  
+#F = fatal, F.y = yes fatal, F.n = non fatal
+R.y_F.y <- 1601
+R.n_F.y <- 510 
+R.y_F.n <- 162527
+R.n_F.n <- 412368
+vec <- c( R.y_F.y, R.n_F.y, R.y_F.n, R.n_F.n)
+Total <- sum(vec)
+Counts <- matrix(vec, nrow=2, ncol=2)
+pi <- Counts/Total
+pi.11 <- pi[1,1]
+pi.12 <- pi[1,2]
+pi.21 <- pi[2,1]
+pi.22 <- pi[2,2]
+pi.1p <- pi.11 + pi.12 
+pi.2p <- pi.21 + pi.22
+Diff.in.Prop <- (pi.11/pi.1p) - (pi.21/pi.2p)
+Relative.Risk <- ( (pi.11)/(pi.11 + pi.12) ) / ( (pi.21)/(pi.21 + pi.22) )
+OR <- (pi.11*pi.22) / (pi.12*pi.21)
+Table2.3 <- data.frame(c("Difference in Proportion", "Relative Risk", "Odds Ratio (OR)"),
+                       decimal(c(Diff.in.Prop, Relative.Risk, OR), dec))
+colnames(Table2.3) <- c("Statistic", "Value")
+kable(Table2.3)
+```
+
+```{r, eval=FALSE, echo=FALSE}
+xtable(Table2.3)
+```
+
+  
+### Problem 2.8
+```{r}
+odd.f <- 2.9 #= pi.11 / pi.12
+OR <- 11.4
+odd.m <- odd.f / OR
+probsurv.f <- odd.f / (odd.f + 1)
+probsurv.m <- odd.m / (odd.m + 1)
+Table2.8 <- data.frame(c("Female", "Male"),decimal(c(probsurv.f, probsurv.m), dec))
+colnames(Table2.8) <- c("Gender", "Proportion Survived")
+kable(Table2.8)
+```
+
+
+
+```{r, eval=FALSE, echo=FALSE}
+xtable(Table2.8)
+```
+
+### Problem 2.12
+
+```{r}
+Male.vec <-   c(512, 353, 120, 138,  53,  22, 313, 207, 205, 279, 138, 351)
+Female.vec <- c( 89,  17, 202, 131,  94,  24, 19, 8, 391, 244, 299, 317)
+Male <- matrix(Male.vec ,nrow=6, ncol=2)
+Female <- matrix(Female.vec ,nrow=6, ncol=2)
+Dep.Num <- c(1:6)
+Department <- c(LETTERS[1:6])
+Cond.OR <- c()
+  for (Dep in Dep.Num){
+    Matrix <- rbind(Male[Dep,], Female[Dep,])
+    OR.dep <- (Matrix[1,1] * Matrix[2,2]) / (Matrix[1,2] * Matrix[2,1])
+    Cond.OR <- c(Cond.OR, OR.dep)  }
+Conditional.OR <-data.frame(Department,   decimal(Cond.OR, dec))
+colnames(Conditional.OR) <- c("Department", "Conditional OR")
+kable(Conditional.OR)
+Sum.Matrix <- matrix(c(rep(0, 4)), nrow=2, ncol=2)
+  for (Dep in Dep.Num){
+    Matrix <- rbind(Male[Dep,], Female[Dep,])
+    Sum.Matrix <- Sum.Matrix + Matrix   }
+Marg.OR <- (Sum.Matrix[1,1] * Sum.Matrix[2,2]) / (Sum.Matrix[1,2] * Sum.Matrix[2,1])
+Marginal.OR <- as.data.frame(decimal(Marg.OR, dec))
+colnames(Marginal.OR) <- c("Marginal OR")
+kable(Marginal.OR)
+```
+
+\newpage 
+```{r}
+Corn.OR <- c() #using female and Department F(6) as the baseline
+  for (Dep in c(1:5)){
+    pi.G.f_D.f <- sum(Female[6, ]) / (sum(Female[6,])+sum(Male[6,]))
+    pi.G.f_D <- (sum(Female[Dep,])) / (sum(Female[Dep,])+sum(Male[Dep,]))
+    pi.G_D.f <- (sum(Male[6,])) / (sum(Female[6,])+sum(Male[6,]))
+    pi.G_F <- sum(Male[Dep,]) / (sum(Female[Dep,])+sum(Male[Dep,]))
+    Corn.OR.i <- ( pi.G_F * pi.G.f_D.f) / (pi.G.f_D * pi.G_D.f)
+    Corn.OR <- c(Corn.OR, Corn.OR.i)
+  }
+Corner.OR <-data.frame(Department[1:5],   decimal(Corn.OR, dec))
+colnames(Corner.OR) <- c("Department", "Corner OR")
+kable(Corner.OR)
+```
+
+
+
+```{r, echo=FALSE, eval=FALSE}
+xtable(Conditional.OR)
+xtable(Marginal.OR)
+xtable(Corner.OR)
+```
+
+
+```{r}
+
+```
+

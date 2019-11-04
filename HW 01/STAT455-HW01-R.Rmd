@@ -1,0 +1,88 @@
+---
+output:
+  pdf_document:
+    fig_caption: yes
+header-includes:
+  - \usepackage{color}
+  - \usepackage{mathtools}
+---
+```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+library(ggplot2)
+library(readr)
+library(gridExtra)
+library(grid)
+library(png)
+library(downloader)
+library(grDevices)
+library(latex2exp)
+library(knitr)
+library(leaps)
+library(directlabels)
+library(diffusr)
+library(MASS)
+library(invgamma)
+library(condMVNorm)
+```
+
+
+# STAT 455 Homework 01 - R Code  
+*Martha Eichlersmith*  
+2019-10-10
+
+## Problem 1.7
+```{r}
+y <- 20
+n <- 20
+pi.0 <- 0.5
+pi.hat <- y/n
+z.a <- abs(qnorm(0.025, 0, 1))
+```
+
+### Problem 1.7d
+```{r}
+S.2 <- (n*(pi.hat - pi.0)^2) / (pi.0*(1-pi.0))
+S <- sqrt(S.2)
+pi.tilde <- pi.hat*(n / (n + z.a^2))+ 0.5*( z.a^2 / (n + z.a^2))
+c <- z.a*sqrt(
+  (1 / ( n + z.a^2))*
+    (pi.hat*(1 - pi.hat)* (n / (n + z.a^2)) + .5*.5*(z.a^2 / (n + z.a^2)) 
+     )
+  )
+apval <- 1- pchisq(20 , 1)
+S.2.lower <- pi.tilde - c
+S.2.upper <- pi.tilde + c
+```
+
+```{r, echo=FALSE }
+paste("S^2:", S.2)
+paste("S:", S)
+paste("Appox pval: ", apval)
+paste("Confidence Interval: [", S.2.lower, ", ", S.2.upper, "]")
+```
+
+
+### Problem 1.7e
+```{r}
+L.2 <- 2*( y*log(y/(n*pi.0))) #(n - y)*log( (n - y)/ (n - n*pi.0))
+L <- sqrt(L.2)
+L.2.lower <- exp(-(z.a^2)/40)
+L.2.upper <- 1
+```
+```{r, echo=FALSE}
+paste("L^2:", L.2)
+paste("L:", L)
+paste("Confidence Interval: [", L.2.lower, ", ", L.2.upper, "]")
+```
+
+
+### Problem 1.7f
+```{r}
+diff <- 0.05
+pi.T <- 0.9
+n <- (z.a^2 * pi.T * (1 - pi.T)) / (diff^2)
+```
+```{r, echo=FALSE}
+paste("n = ", n, "so a sample size of ", trunc(n), " is needed")
+```
+
+
