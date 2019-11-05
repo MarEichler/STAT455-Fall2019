@@ -1,0 +1,96 @@
+\documentclass[12pt, letterpaper]{article}
+
+\input{C:/Users/MarEichler17/Documents/MYE-Documents/SCHOOL/Northwestern/preamble}
+ 
+
+
+
+ %line spacing
+ \usepackage{setspace}
+ \setstretch{1.2}
+ 
+ %header, pagestyle
+ \geometry{pass, letterpaper}
+ \pagestyle{fancy}
+ \fancyhf{} % sets both header and footer to nothing
+ \renewcommand{\headrulewidth}{0pt}
+ \lhead{STAT 455 Fall 2019 \\ Homework 04}
+ \rhead{Martha Eichlersmith \\ Page \thepage \text{ of} \pageref{LastPage}}
+ \setlength{\headsep}{48pt}
+ \renewcommand{\sectionmark}[1]{\gdef\currsection{\thesection \ #1}}
+ \renewcommand{\subsectionmark}[1]{\markright{\currsection\ $\mid$ \thesubsection \  #1}}
+
+
+
+\begin{document}
+
+\subsection*{Problem {\#}3.3}  
+
+\begin{wraptable}{l}{3in} 
+\vspace{-12pt} 
+\begin{tabular}{c l cc }
+							&			& \multicolumn{2}{c}{Second Shot} \\
+							&			& $S_2 = 1$	& $S_2 = 0$ 	\\ \cline{3-4} 
+\multirow{2}{*}{First Shot} & $S_1 = 1$	& \multicolumn{1}{|c}{251}		& \multicolumn{1}{|c|}{34}\\ \cline{3-4} 
+							& $S_1 = 0$ 	& \multicolumn{1}{|c}{48}		& \multicolumn{1}{|c|}{5} \\ \cline{3-4}
+\end{tabular}
+\vspace{-60pt} 
+\end{wraptable} 
+
+\quad \\[12pt]
+$H_0: S_1 \independent S_2 \vs H_1:$ not $H_0$  
+\\[36pt]
+Data is not ordinal so a restricted alternative is not necessary.  
+
+\begin{tabu}{X[l, 1] X[l, 1] X[l, 1] X[l, 4]}
+\textbf{Statistics} & \textbf{Value} & \textbf{p-value} & \textbf{Conclusion} \\ \hline 
+$X^2$ & 0.2727 & 0.6015 & Do not reject $H_0$, there is evidence that the first and second shot are independent \\ \hline
+$G^2$ & 0.2858 & 0.5930 & Do not reject $H_0$, there is evidence that the first and second shot are independent \\ \hline 
+\end{tabu}
+
+\subsection*{Problem {\#}3.9(a)}
+% latex table generated in R 3.6.1 by xtable 1.8-4 package
+% Tue Nov 05 16:30:42 2019
+	\begin{tabular}{lrr}
+		\hline
+		\textbf{Counts} & Drugs & No Drugs \\ 
+		\hline
+		Schizophrenia & 105 & 19 \\ 
+		Affective disorder & 8 & 47 \\ 
+		Neurosis & 12 & 52 \\ 
+		Personality disorder & 2 & 0 \\ 
+		Special Systems & 18 & 13 \\ 
+		\hline
+	\end{tabular}
+\hfill 
+% latex table generated in R 3.6.1 by xtable 1.8-4 package
+% Tue Nov 05 16:30:42 2019
+	\begin{tabular}{lrr}
+		\hline
+		\textbf{Std Residuals} & Drugs & No Drugs \\ 
+		\hline
+		Schizophrenia & 7.8745 & 2.3853 \\ 
+		Affective disorder & -7.8745 & -4.8417 \\ 
+		Neurosis & 1.6023 & 4.8417 \\ 
+		Personality disorder & -1.6023 & -5.1395 \\ 
+		Special Systems & -2.3853 & 5.1395 \\ 
+		\hline
+	\end{tabular}
+
+\outstanding{conclusion}
+
+\subsection*{Problem {\#}3.12}
+\outstanding{}
+\subsection*{Problem {\#}3.15}
+\outstanding{}
+\subsection*{Problem {\#}3.31}
+\outstanding{}
+
+
+\end{document}
+
+
+
+%  \text{\textcolor{red}{$$}}
+%  \text{\textcolor{blue}{$$}}
+%  \text{\textcolor{Green}{$$}}
