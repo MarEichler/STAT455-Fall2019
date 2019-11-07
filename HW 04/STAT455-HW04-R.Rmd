@@ -6,6 +6,7 @@ header-includes:
   - \usepackage{color}
   - \usepackage{mathtools}
   - \usepackage[labelformat=empty]{caption}
+  - \usepackage{booktabs}
 ---
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 library(boot)
@@ -51,7 +52,7 @@ res.matrix <- matrix(stdreschi, nrow=r, ncol=c, byrow=TRUE)
 rownames(res.matrix) <- names.r 
 colnames(res.matrix) <- names.c
 t1 <- kable(count.m,    format="latex", booktabs=TRUE)
-t2 <- kable(res.matrix, format="latex", booktabs=TRUE)
+t2 <- kable(res.matrix, format="latex" , booktabs=TRUE)
 ```
 
 ```{r, echo=FALSE, results='asis'}
@@ -77,42 +78,32 @@ xtable(count.m, digits=0, align=align.vec)
 xtable(decimal(res.matrix, dec), align=align.vec)
 ```
 
-
-```{r, message=FALSE, echo=FALSE}
+```{r, message=FALSE, echo=FALSE, eval=FALSE}
 r <- 3
 c <- 3
-names.r <- c("Less than highschool", "Highschool", "More than highschool")
-names.c <- c("Disapprove", "MIddle", "Approve")
-
-row <- c()
-for (i in 1:r){
-  vec <- rep(i, c)
-  row <- c(row, vec)}
-column <- c(rep(c(1:c), r)) # column data
 count <- c(209, 101, 237, 151, 126, 426, 16, 21, 138)
-count.m <- matrix(count, nrow=r, ncol=c, byrow=TRUE)
-rownames(count.m) <- names.r 
-colnames(count.m) <- names.c
-TABLE_count.m <- kable(count.m, digits=0, align=c(rep('r', c)), caption="Counts")
-fit <- glm(count~as.factor(column)+as.factor(row), family=poisson(link="log"))
-TABLE_count.m
+kable(count.m, digits=0, align=c(rep('r', c)))
 ```
 
 
 ## Problem 3.15  
-```{r, eval=FALSE}
+```{r}
 count <- c(7, 8, 0, 15)
 n <- sum(count)
 Count <- matrix(count, nrow=2, ncol=2, byrow=TRUE)
 OR <- (Count[1,1]*Count[2,2]) / (Count[1,2]*Count[2,1])
+
 #WOOLF'S APPROXIMATE CI
 se_log <- sqrt(  sum(1/count))
 z.star <- qnorm(0.975, 0, 1)
 CI.up_log <- log(OR) + z.star*se_log
 CI.low_log <- log(OR) - z.star*se_log
 CI.up <- exp(CI.up_log)
+CI.low <- exp(CI.low_log)
 Woolf_CI <- c(CI.low, CI.up)
-
+```
+```{r, echo=FALSE}
 paste("OR:", decimal(OR, dec))
 paste("Woolf CI Interval: (", decimal(Woolf_CI[1], dec), ",", decimal(Woolf_CI[2], dec), ")")
 ```
+
