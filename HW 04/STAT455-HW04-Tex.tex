@@ -49,42 +49,110 @@ $G^2$ & 0.2858 & 0.5930 & Do not reject $H_0$, there is evidence that the first 
 \end{tabu}
 
 \subsection*{Problem {\#}3.9(a)}
-% latex table generated in R 3.6.1 by xtable 1.8-4 package
-% Tue Nov 05 16:30:42 2019
-	\begin{tabular}{lrr}
-		\hline
-		\textbf{Counts} & Drugs & No Drugs \\ 
-		\hline
-		Schizophrenia & 105 & 19 \\ 
-		Affective disorder & 8 & 47 \\ 
-		Neurosis & 12 & 52 \\ 
-		Personality disorder & 2 & 0 \\ 
-		Special Systems & 18 & 13 \\ 
-		\hline
-	\end{tabular}
-\hfill 
-% latex table generated in R 3.6.1 by xtable 1.8-4 package
-% Tue Nov 05 16:30:42 2019
-	\begin{tabular}{lrr}
-		\hline
-		\textbf{Std Residuals} & Drugs & No Drugs \\ 
-		\hline
-		Schizophrenia & 7.8745 & 2.3853 \\ 
-		Affective disorder & -7.8745 & -4.8417 \\ 
-		Neurosis & 1.6023 & 4.8417 \\ 
-		Personality disorder & -1.6023 & -5.1395 \\ 
-		Special Systems & -2.3853 & 5.1395 \\ 
-		\hline
-	\end{tabular}
+
+
+
+\begin{table}[h]
+	\parbox{.45\linewidth}{
+		\centering
+\begin{tabular}{lrr}
+	\hline
+	& Drugs & No Drugs \\ 
+	\hline
+	Schizophrenia & 105 & 52 \\ 
+	Affective disorder & 19 & 2 \\ 
+	Neurosis & 8 & 0 \\ 
+	Personality disorder & 47 & 18 \\ 
+	Special Systems & 12 & 13 \\ 
+	\hline
+\end{tabular}
+		\caption{Counts}
+	}
+	\hfill
+	\parbox{.45\linewidth}{
+		\centering
+\begin{tabular}{lrr}
+	\hline
+	& Drugs & No Drugs \\ 
+	\hline
+	Schizophrenia & 9.6582 & -9.6582 \\ 
+	Affective disorder & -6.3053 & 6.3053 \\ 
+	Neurosis & -6.1760 & 6.1760 \\ 
+	Personality disorder & 1.3491 & -1.3491 \\ 
+	Special Systems & 0.6542 & -0.6542 \\ 
+	\hline
+\end{tabular}
+		\caption{Pearson Standardized Residuals}
+	}
+\end{table}
 
 \outstanding{conclusion}
 
 \subsection*{Problem {\#}3.12}
-\outstanding{}
+Gamma, $\gamma$: 0.3873 \\
+95\% CI: (0.3156, 0.4591)
+
+Gamma is 0.3873 which indicates that when attitudes disagree (i.e. counts that are not on the diagonal), the proportion of concordant attitudes towards abortions ($\uparrow$ school = $\uparrow$ approval) is larger than the proportion of discordant attitudes.  This means that there is greater approval of abortion when there is more schooling.  
+
 \subsection*{Problem {\#}3.15}
-\outstanding{}
+
+\begin{tabular}{l l l}
+ & \textbf{Type of CI for OR} & \textbf{95\% CI} \\ \hline
+(a)  & Woolf (i.e. Wald) & $(0, \infty)$  \\
+(b) & Cornfield's Exact &$(2.646, \infty)$ \outstanding{Answer: (0.618, $\infty$)} \\
+(c) & Profile Likelihood & $(5.117, \infty)$ 
+\end{tabular} 
+
 \subsection*{Problem {\#}3.31}
 \outstanding{}
+
+
+
+
+\begin{table}[!htb]
+	\begin{minipage}{.5\linewidth}
+		\caption{Counts}
+		\centering \begin{table}[h]
+			
+			\caption{\label{tab:}one}
+			\centering
+			\begin{tabular}{lrr}
+				\toprule
+				& Drugs & No Drugs\\
+				\midrule
+				Schizophrenia & 105 & 52\\
+				Affective disorder & 19 & 2\\
+				Neurosis & 8 & 0\\
+				Personality disorder & 47 & 18\\
+				Special Systems & 12 & 13\\
+				\bottomrule
+			\end{tabular}
+	\end{table} \end{minipage}%
+	\begin{minipage}{.5\linewidth}
+		\centering
+		\caption{Perason Standard Residuals} \begin{table}[h]
+			
+			\caption{\label{tab:}tow}
+			\centering
+			\begin{tabular}{lrr}
+				\toprule
+				& Drugs & No Drugs\\
+				\midrule
+				Schizophrenia & 9.6581715 & -9.6581716\\
+				Affective disorder & -6.3053235 & 6.3053236\\
+				Neurosis & -6.1759785 & 6.1759786\\
+				Personality disorder & 1.3491055 & -1.3491055\\
+				Special Systems & 0.6542325 & -0.6542325\\
+				\bottomrule
+			\end{tabular}
+	\end{table} \end{minipage} 
+\end{table}
+
+
+
+
+
+
 
 
 \end{document}

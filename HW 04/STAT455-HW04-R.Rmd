@@ -5,13 +5,17 @@ output:
 header-includes:
   - \usepackage{color}
   - \usepackage{mathtools}
+  - \usepackage[labelformat=empty]{caption}
 ---
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 library(boot)
 library(knitr)
 library(xtable)
+library(ProfileLikelihood)
 decimal <- function(x, k) trimws(format(round(x, k), nsmall=k))
 dec <- 4
+```
+```{r global_options, R.options=knitr::opts_chunk$set(warning=FALSE, message=FALSE)}
 ```
 
 
@@ -25,53 +29,90 @@ shots <- matrix(c(251, 48, 34, 5), nrow=2, ncol=2)
 chisq.test(shots, correct=FALSE)
 ```
 
-```{r, echo=FALSE, eval=FALSE}
-r <- 4
-c <- 4
-income <- c(rep(1,c), rep(2, c), rep(3, c), rep(4, c))
-satisf <- c(rep(c(1:4), r))
-count <- c(1, 3, 10,  6,
-           2, 3, 10,  7,
-           1, 6, 14, 12,
-           0, 1,  9, 11)
-count.m <- matrix(count, nrow=r, ncol=c)
-fit <- glm(count~as.factor(income)+as.factor(satisf), family=poisson(link="log"))
-#chisq.test(count.m)
-stdreschi <- glm.diag(fit)$rp
-res.matrix <- matrix(stdreschi, nrow=r, ncol=r)
-res.matrix
-```
-
+## Problem 3.9a
 ```{r, message=FALSE}
 r <- 5
 c <- 2
-names.r <- c("Schizophrenia", "Affective disorder", "Neurosis", "Personality disorder", "Special Systems")
+names.r <- c("Schizophrenia", 
+             "Affective disorder", 
+             "Neurosis", 
+             "Personality disorder", 
+             "Special Systems")
 names.c <- c("Drugs", "No Drugs")
 row <- c(rep(1,c), rep(2, c), rep(3, c), rep(4, c), rep(5, c)) #row  data
 column <- c(rep(c(1:2), r)) # column data
-count <- c(105, 8, 12, 2, 18, 19, 47, 52, 0, 13)
+count <- c(105, 19, 8, 47, 12, 52, 2, 0, 18, 13)
 count.m <- matrix(count, nrow=r, ncol=c)
 rownames(count.m) <- names.r 
 colnames(count.m) <- names.c
-#kable(decimal(count.m, 0))
-fit <- glm(count~as.factor(row)+as.factor(column), family=poisson(link="log"))
-#fit <- glm(count~row+column, family=poisson(link="log"))
+fit <- glm(count~as.factor(column)+as.factor(row), family=poisson(link="log"))
 stdreschi <- glm.diag(fit)$rp #need book package 
-res.matrix <- matrix(stdreschi, nrow=r, ncol=c)
+res.matrix <- matrix(stdreschi, nrow=r, ncol=c, byrow=TRUE)
 rownames(res.matrix) <- names.r 
 colnames(res.matrix) <- names.c
-#kable(decimal(res.matrix, dec))
+t1 <- kable(count.m,    format="latex", booktabs=TRUE)
+t2 <- kable(res.matrix, format="latex", booktabs=TRUE)
+```
+
+```{r, echo=FALSE, results='asis'}
+cat(c("\\begin{table}[!htb]
+    \\begin{minipage}{.5\\linewidth}
+      \\caption{Counts}
+      \\centering",
+        t1,
+    "\\end{minipage}%
+    \\begin{minipage}{.5\\linewidth}
+      \\centering
+        \\caption{Perason Standard Residuals}",
+        t2,
+    "\\end{minipage} 
+\\end{table}"
+))  
 ```
 
 
-```{r, message=FALSE}
-sas.output <- c(9.6581707557,-9.658172142, -6.305326356, 6.3053181409,-6.175979063, 
-                6.1759778024,1.3491005584,-1.349107017, 0.6542325397,-0.65423254)
-cbind(sas.output, stdreschi, sas.output - stdreschi)
+```{r, echo=FALSE, echo=FALSE, eval=FALSE}
+align.vec <- c("l", rep("r", c))
+xtable(count.m, digits=0, align=align.vec)
+xtable(decimal(res.matrix, dec), align=align.vec)
 ```
 
-```{r, echo=FALSE, eval=FALSE}
-xtable(count.m, digits=0, align=c("l", "r", "r"))
-xtable(decimal(res.matrix, 4), align=c("l", "r", "r"))
+
+```{r, message=FALSE, echo=FALSE}
+r <- 3
+c <- 3
+names.r <- c("Less than highschool", "Highschool", "More than highschool")
+names.c <- c("Disapprove", "MIddle", "Approve")
+
+row <- c()
+for (i in 1:r){
+  vec <- rep(i, c)
+  row <- c(row, vec)}
+column <- c(rep(c(1:c), r)) # column data
+count <- c(209, 101, 237, 151, 126, 426, 16, 21, 138)
+count.m <- matrix(count, nrow=r, ncol=c, byrow=TRUE)
+rownames(count.m) <- names.r 
+colnames(count.m) <- names.c
+TABLE_count.m <- kable(count.m, digits=0, align=c(rep('r', c)), caption="Counts")
+fit <- glm(count~as.factor(column)+as.factor(row), family=poisson(link="log"))
+TABLE_count.m
 ```
 
+
+## Problem 3.15  
+```{r, eval=FALSE}
+count <- c(7, 8, 0, 15)
+n <- sum(count)
+Count <- matrix(count, nrow=2, ncol=2, byrow=TRUE)
+OR <- (Count[1,1]*Count[2,2]) / (Count[1,2]*Count[2,1])
+#WOOLF'S APPROXIMATE CI
+se_log <- sqrt(  sum(1/count))
+z.star <- qnorm(0.975, 0, 1)
+CI.up_log <- log(OR) + z.star*se_log
+CI.low_log <- log(OR) - z.star*se_log
+CI.up <- exp(CI.up_log)
+Woolf_CI <- c(CI.low, CI.up)
+
+paste("OR:", decimal(OR, dec))
+paste("Woolf CI Interval: (", decimal(Woolf_CI[1], dec), ",", decimal(Woolf_CI[2], dec), ")")
+```
