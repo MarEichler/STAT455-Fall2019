@@ -1,23 +1,21 @@
 ---
+header-includes:
+- \usepackage{color}
+- \usepackage{mathtools}
+- \usepackage[labelformat=empty]{caption}
+- \usepackage{booktabs}
 output:
   pdf_document:
     fig_caption: yes
-header-includes:
-  - \usepackage{color}
-  - \usepackage{mathtools}
-  - \usepackage[labelformat=empty]{caption}
-  - \usepackage{booktabs}
 ---
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-library(boot)
 library(knitr)
 library(xtable)
-library(ProfileLikelihood)
+library(vcdExtra) #calculate Goodman_kruskal Gamma 
 decimal <- function(x, k) trimws(format(round(x, k), nsmall=k))
 dec <- 4
 ```
-```{r global_options, R.options=knitr::opts_chunk$set(warning=FALSE, message=FALSE)}
-```
+
 
 
 # STAT 455 Homework 04 - R Code  
@@ -26,33 +24,83 @@ dec <- 4
 
 ## Problem 3.3
 ```{r}
+func_Xsqcells <- function(matrix, i, j){
+Y.ij <- matrix[i, j]
+Y.iplus <- sum(matrix[i,])
+Y.plusj <- sum(matrix[,j])
+n <- sum(matrix)
+m.ij <- (Y.iplus*Y.plusj)/n
+(Y.ij - m.ij)^2 / m.ij}
+
+func_chisqtest <- function(matrix){
+I <- dim(matrix)[1]
+J <- dim(matrix)[2]
+row <- c()
+for (i in 1:I){
+  vec <- rep(i, J)
+  row <- c(row, vec)}
+col <- c(rep(c(1:J), I))
+Xsq <- sum(mapply(func_Xsqcells, matrix=rep(list(matrix), length(row)), i=row, j=col))
+df <- (I - 1)*(J-1)
+pval <- 1- pchisq(Xsq, df)
+paste("X-squared=", round(Xsq, 5), ", df=", df, ", p-value=", decimal(pval, 4))}
+
+func_Lsqcells <- function(matrix, i, j){
+Y.ij <- matrix[i, j]
+Y.iplus <- sum(matrix[i,])
+Y.plusj <- sum(matrix[,j])
+n <- sum(matrix)
+m.ij <- (Y.iplus*Y.plusj)/n
+2*Y.ij*log(Y.ij/m.ij)}
+
+func_liketest <- function(matrix){
+I <- dim(matrix)[1]
+J <- dim(matrix)[2]
+row <- c()
+for (i in 1:I){
+  vec <- rep(i, J)
+  row <- c(row, vec)}
+col <- c(rep(c(1:J), I))
+Lsq <- sum(mapply(func_Lsqcells, matrix=rep(list(matrix), length(row)), i=row, j=col))
+df <- (I - 1)*(J-1)
+pval <- 1- pchisq(Lsq, df)
+paste("L-squared=", round(Lsq, 5), ", df=", df, ", p-value=", decimal(pval, 4))}
+```
+\newpage  
+```{r}
 shots <- matrix(c(251, 48, 34, 5), nrow=2, ncol=2)
-chisq.test(shots, correct=FALSE)
+func_chisqtest(shots)
+func_liketest(shots)
 ```
 
+
 ## Problem 3.9a
-```{r, message=FALSE}
-r <- 5
-c <- 2
+```{r, message=FALSE, warning=FALSE}
 names.r <- c("Schizophrenia", 
              "Affective disorder", 
              "Neurosis", 
              "Personality disorder", 
              "Special Systems")
 names.c <- c("Drugs", "No Drugs")
-row <- c(rep(1,c), rep(2, c), rep(3, c), rep(4, c), rep(5, c)) #row  data
-column <- c(rep(c(1:2), r)) # column data
-count <- c(105, 19, 8, 47, 12, 52, 2, 0, 18, 13)
-count.m <- matrix(count, nrow=r, ncol=c)
-rownames(count.m) <- names.r 
-colnames(count.m) <- names.c
-fit <- glm(count~as.factor(column)+as.factor(row), family=poisson(link="log"))
-stdreschi <- glm.diag(fit)$rp #need book package 
-res.matrix <- matrix(stdreschi, nrow=r, ncol=c, byrow=TRUE)
-rownames(res.matrix) <- names.r 
-colnames(res.matrix) <- names.c
-t1 <- kable(count.m,    format="latex", booktabs=TRUE)
-t2 <- kable(res.matrix, format="latex" , booktabs=TRUE)
+count.vec <- c(105, 12, 18, 47,  0,
+             8,  2, 19, 52, 13)
+
+r <-length(names.r)
+c <- length(names.c)
+row <- c()
+for (i in 1:r){
+  vec <- rep(i, c)
+  row <- c(row, vec)
+}
+column <- c(rep(c(1:c), r))
+
+Count<- matrix(count.vec, nrow=r, ncol=c)
+rownames(Count) <- names.r 
+colnames(Count) <- names.c
+stdreschi <- chisq.test(Count)$stdres
+t1 <- kable(Count,    format="latex", booktabs=TRUE)
+t2 <- kable(stdreschi, format="latex" , booktabs=TRUE)
+
 ```
 
 ```{r, echo=FALSE, results='asis'}
@@ -71,18 +119,33 @@ cat(c("\\begin{table}[!htb]
 ))  
 ```
 
+## Problem 3.12
+```{r}
+names.r <- c("Less than highschool", 
+             "Highschool", 
+             "More than highschool")
+names.c <- c("Disapprove", "Middle", "Approve")
+count.vec <- c(209, 151, 16,
+               101, 126, 21,
+               237, 426, 138)
 
-```{r, echo=FALSE, echo=FALSE, eval=FALSE}
-align.vec <- c("l", rep("r", c))
-xtable(count.m, digits=0, align=align.vec)
-xtable(decimal(res.matrix, dec), align=align.vec)
+r <-length(names.r)
+c <- length(names.c)
+row <- c()
+for (i in 1:r){
+  vec <- rep(i, c)
+  row <- c(row, vec)
+}
+column <- c(rep(c(1:c), r))
+
+Count<- matrix(count.vec, nrow=r, ncol=c)
+
+gamma <- GKgamma(Count)$gamma
+gammaCI <- GKgamma(Count)$CI
 ```
-
-```{r, message=FALSE, echo=FALSE, eval=FALSE}
-r <- 3
-c <- 3
-count <- c(209, 101, 237, 151, 126, 426, 16, 21, 138)
-kable(count.m, digits=0, align=c(rep('r', c)))
+```{r, echo=FALSE}
+paste("Gamma:", decimal(gamma, dec))
+paste("CI: (", decimal(gammaCI[1], dec), ",", decimal(gammaCI[2], dec), ")")
 ```
 
 
