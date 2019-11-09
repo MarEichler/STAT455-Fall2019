@@ -144,7 +144,7 @@ paste("CI: (", decimal(gammaCI[1], dec), ",", decimal(gammaCI[2], dec), ")")
 
 \newpage 
 ## Problem 3.15  
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=FALSE}
 names.r <- c("Treatment", "Control")
 names.c <- c("Normal.Yes", "Normal.No")
 r <-length(names.r)
@@ -158,22 +158,88 @@ kable(Count, booktabs=TRUE)
 n <- sum(count)
 OR <- (Count[1,1]*Count[2,2]) / (Count[1,2]*Count[2,1])
 
-A <- oddsratio(Count, conf.level=0.95, method="wald")$measure[2,] #WOOLF (WALD)
-B <- oddsratio(Count, conf.level=0.95, method="fisher")$measure[2,] #CORNFIELD EXACT
-C1 <- c("NA", "NA", "NA")
-C2 <- oddsratio((Count+1), conf.level=0.95, method="midp")$measure[2,] #PROFILE LIKELIHOOD
+#WOOLF (WALD)
+A <- oddsratio(Count, conf.level=0.95, method="wald")$measure[2,2:3]
+
+#CORNFIELD EXACT
+B <- Cornfieldexact.CI(Count[1,1], sum(Count[1,]), Count[2,1], sum(Count[2,])) 
+
+#PROFILE LIKELIHOOD
+y.data <- c(rep(1, Count[1,1]), rep(0, Count[1,2]), rep(1, Count[2,1]), rep(0, Count[2,2]))
+x.data <- c(rep(1, Count[1,1]), rep(1, Count[1,2]), rep(0, Count[2,1]), rep(0, Count[2,2]))
+df.data <- data.frame("Y"=y.data, "X"=x.data)
+logit <- glm(Y ~ X, data=df.data, family=binomial)
+C1 <- exp(confint(logit)[2,])
+
+#PROFILE LIKELIHOOD adj
+Count.adj <- Count+1
+y.data.adj <- c(rep(1, Count.adj[1,1]), rep(0, Count.adj[1,2]), rep(1, Count.adj[2,1]), rep(0, Count.adj[2,2]))
+x.data.adj <- c(rep(1, Count.adj[1,1]), rep(1, Count.adj[1,2]), rep(0, Count.adj[2,1]), rep(0, Count.adj[2,2]))
+df.data.adj <- data.frame("Y"=y.data.adj, "X"=x.data.adj)
+logit.adj <- glm(Y ~ X, data=df.data.adj, family=binomial)
+C2 <- exp(confint(logit.adj)[2,])
+
+
+
 names <- c("Woolf (Wald)", "Cornfield Exact", "Profile Likelihood", "Profe Likelihood, counts+1")
-results<- cbind(names, rbind(decimal(A, dec), decimal(B, dec), C1, decimal(C2, dec)))
+results<- cbind( names, decimal(rbind(A, B, C1, C2), dec))
 rownames(results) <- c("A", "B", "C(1)", "C(2)")
-colnames(results) <- c("", "Estimate", "CI Lower", "CI Uppder")
+colnames(results) <- c("", "CI Lower", "CI Uppder")
 
 kable(results, align='lrrr', booktabs=TRUE)
 ```
-
 ```{r, echo=FALSE, eval=FALSE}
 xtable(Count)
 xtable(results)
 ```
+
+
+### In-Class Example 
+```{r, message=FALSE}
+names.r <- c("Risk=Y", "Risk=N")
+names.c <- c("Disease=Y", "Disease=N")
+r <-length(names.r)
+c <- length(names.c)
+count.vec <- count <- c(18, 193, 8, 281)
+Count<- matrix(count.vec, nrow=r, ncol=c, byrow=TRUE)
+rownames(Count) <- names.r 
+colnames(Count) <- names.c
+kable(Count, booktabs=TRUE)
+
+n <- sum(count)
+OR <- (Count[1,1]*Count[2,2]) / (Count[1,2]*Count[2,1])
+
+#WOOLF (WALD)
+A <- oddsratio(Count, conf.level=0.95, method="wald")$measure[2,2:3]
+
+#CORNFIELD EXACT
+B <- Cornfieldexact.CI(Count[1,1], sum(Count[1,]), Count[2,1], sum(Count[2,])) 
+
+#PROFILE LIKELIHOOD
+y.data <- c(rep(1, Count[1,1]), rep(0, Count[1,2]), rep(1, Count[2,1]), rep(0, Count[2,2]))
+x.data <- c(rep(1, Count[1,1]), rep(1, Count[1,2]), rep(0, Count[2,1]), rep(0, Count[2,2]))
+df.data <- data.frame("Y"=y.data, "X"=x.data)
+logit <- glm(Y ~ X, data=df.data, family=binomial)
+C <- exp(confint(logit)[2,])
+
+#put it alll in a tabbble
+names <- c("Woolf (Wald)", "Cornfield Exact", "Profile Likelihood")
+results<- cbind(names, rbind(decimal(A, dec), decimal(B, dec), decimal(C, dec)))
+rownames(results) <- c("A", "B", "C")
+colnames(results) <- c("", "CI Lower", "CI Uppder")
+
+kable(results, align='lrrr', booktabs=TRUE)
+```
+
+
+`
+
+
+
+
+
+
+
 
 
 ```{r, echo=FALSE, eval=FALSE}
