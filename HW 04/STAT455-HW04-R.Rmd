@@ -4,6 +4,8 @@ header-includes:
 - \usepackage{mathtools}
 - \usepackage[labelformat=empty]{caption}
 - \usepackage{booktabs}
+- \usepackage{geometry}
+geometry: "left=1.75cm,right=1.75cm,top=1.5cm,bottom=2cm" 
 output:
   pdf_document:
     fig_caption: yes
@@ -12,6 +14,9 @@ output:
 library(knitr)
 library(xtable)
 library(vcdExtra) #calculate Goodman_kruskal Gamma 
+library(ORCI) #cornfield exact CI for odds ratio
+library(DescTools) #OddsRatio()
+library(epitools) #oddsratio 
 decimal <- function(x, k) trimws(format(round(x, k), nsmall=k))
 dec <- 4
 ```
@@ -66,7 +71,6 @@ df <- (I - 1)*(J-1)
 pval <- 1- pchisq(Lsq, df)
 paste("L-squared=", round(Lsq, 5), ", df=", df, ", p-value=", decimal(pval, 4))}
 ```
-\newpage  
 ```{r}
 shots <- matrix(c(251, 48, 34, 5), nrow=2, ncol=2)
 func_chisqtest(shots)
@@ -76,22 +80,18 @@ func_liketest(shots)
 
 ## Problem 3.9a
 ```{r, message=FALSE, warning=FALSE}
-names.r <- c("Schizophrenia", 
-             "Affective disorder", 
-             "Neurosis", 
-             "Personality disorder", 
-             "Special Systems")
+names.r <- c("Schizophrenia", "Affective disorder", "Neurosis",
+             "Personality disorder", "Special systems")
 names.c <- c("Drugs", "No Drugs")
-count.vec <- c(105, 12, 18, 47,  0,
-             8,  2, 19, 52, 13)
+count.vec <- c(105, 12, 18, 47,  0, 8,  2, 19, 52, 13)
 
 r <-length(names.r)
 c <- length(names.c)
 row <- c()
 for (i in 1:r){
   vec <- rep(i, c)
-  row <- c(row, vec)
-}
+  row <- c(row, vec)}
+
 column <- c(rep(c(1:c), r))
 
 Count<- matrix(count.vec, nrow=r, ncol=c)
@@ -121,25 +121,19 @@ cat(c("\\begin{table}[!htb]
 
 ## Problem 3.12
 ```{r}
-names.r <- c("Less than highschool", 
-             "Highschool", 
-             "More than highschool")
+names.r <- c("Less than highschool", "Highschool", "More than highschool")
 names.c <- c("Disapprove", "Middle", "Approve")
-count.vec <- c(209, 151, 16,
-               101, 126, 21,
-               237, 426, 138)
+count.vec <- c(209, 151, 16,101, 126, 21,237, 426, 138)
 
 r <-length(names.r)
 c <- length(names.c)
 row <- c()
 for (i in 1:r){
   vec <- rep(i, c)
-  row <- c(row, vec)
-}
+  row <- c(row, vec)}
 column <- c(rep(c(1:c), r))
 
 Count<- matrix(count.vec, nrow=r, ncol=c)
-
 gamma <- GKgamma(Count)$gamma
 gammaCI <- GKgamma(Count)$CI
 ```
@@ -148,15 +142,42 @@ paste("Gamma:", decimal(gamma, dec))
 paste("CI: (", decimal(gammaCI[1], dec), ",", decimal(gammaCI[2], dec), ")")
 ```
 
-
+\newpage 
 ## Problem 3.15  
-```{r}
-count <- c(7, 8, 0, 15)
+```{r, warning=FALSE}
+names.r <- c("Treatment", "Control")
+names.c <- c("Normal.Yes", "Normal.No")
+r <-length(names.r)
+c <- length(names.c)
+count.vec <- count <- c(7, 8, 0, 15)
+Count<- matrix(count.vec, nrow=r, ncol=c, byrow=TRUE)
+rownames(Count) <- names.r 
+colnames(Count) <- names.c
+kable(Count, booktabs=TRUE)
+
 n <- sum(count)
-Count <- matrix(count, nrow=2, ncol=2, byrow=TRUE)
 OR <- (Count[1,1]*Count[2,2]) / (Count[1,2]*Count[2,1])
 
-#WOOLF'S APPROXIMATE CI
+A <- oddsratio(Count, conf.level=0.95, method="wald")$measure[2,] #WOOLF (WALD)
+B <- oddsratio(Count, conf.level=0.95, method="fisher")$measure[2,] #CORNFIELD EXACT
+C1 <- c("NA", "NA", "NA")
+C2 <- oddsratio((Count+1), conf.level=0.95, method="midp")$measure[2,] #PROFILE LIKELIHOOD
+names <- c("Woolf (Wald)", "Cornfield Exact", "Profile Likelihood", "Profe Likelihood, counts+1")
+results<- cbind(names, rbind(decimal(A, dec), decimal(B, dec), C1, decimal(C2, dec)))
+rownames(results) <- c("A", "B", "C(1)", "C(2)")
+colnames(results) <- c("", "Estimate", "CI Lower", "CI Uppder")
+
+kable(results, align='lrrr', booktabs=TRUE)
+```
+
+```{r, echo=FALSE, eval=FALSE}
+xtable(Count)
+xtable(results)
+```
+
+
+```{r, echo=FALSE, eval=FALSE}
+#WOOLF'S CI
 se_log <- sqrt(  sum(1/count))
 z.star <- qnorm(0.975, 0, 1)
 CI.up_log <- log(OR) + z.star*se_log
@@ -164,9 +185,28 @@ CI.low_log <- log(OR) - z.star*se_log
 CI.up <- exp(CI.up_log)
 CI.low <- exp(CI.low_log)
 Woolf_CI <- c(CI.low, CI.up)
-```
-```{r, echo=FALSE}
 paste("OR:", decimal(OR, dec))
 paste("Woolf CI Interval: (", decimal(Woolf_CI[1], dec), ",", decimal(Woolf_CI[2], dec), ")")
+
+#CORNFIELD EXACT 
+x1 <- Count[1, 1]    # 7
+n1 <- sum(Count[1,]) #15
+x2 <- Count[2, 1]    # 0
+n2 <- sum(Count[2,]) #15
+round(Cornfieldexact.CI(x1, n1, x2, n2, conf=0.95), 4)
+round(OddsRatio(Count, conf.level=0.95, method="mle"), 4) #get exact conf-interval (cornfield)
+round(OddsRatio((Count+0.5), conf.level=0.95, method="mle"), 4) #close to the value when you do it in SAS (2.6460, infty)
+
+
+#Profile Likelihood
+Count <- matrix(c(18, 8, 193, 281), nrow=2, ncol=2)
+#count.vec <- c(7, 8, 0, 15)
+#count.vec <- count.vec + 1
+#Count <- matrix(count.vec, nrow=2, ncol=2)
+oddsratio(Count, conf.level=0.95, method="fisher")$measure[2,]
+#OddsRatio(Count, conf.level=0.95, method="midp", correction=TRUE)
 ```
+
+
+
 

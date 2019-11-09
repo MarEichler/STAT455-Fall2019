@@ -100,10 +100,45 @@ Gamma is 0.3873 which indicates that when attitudes disagree (i.e. counts that a
 
 \begin{tabular}{l l l}
  & \textbf{Type of CI for OR} & \textbf{95\% CI} \\ \hline
-(a)  & Woolf (i.e. Wald) & $(0, \infty)$  \\
-(b) & Cornfield's Exact &$(2.646, \infty)$ \outstanding{Answer: (0.618, $\infty$)} \\
-(c) & Profile Likelihood & $(5.117, \infty)$ 
+(a)  & Woolf (i.e. Wald) & $(0, \infty)$  \\ \hline 
+(b) & Cornfield's Exact & 
+\begin{tabular}{l l }
+	SAS & $(2.6460, \infty)$ \\
+	R & $(1.9784, \infty)$ \\
+	Answer & $(0.618,\ \infty)$ \\
+	\multicolumn{2}{c}{ \outstanding{Which one??}}
+	\end{tabular}\\ \hline 
+(c) & Profile Likelihood & $(5.117, \infty)$ \\ \hline 
 \end{tabular} 
+
+% latex table generated in R 3.6.1 by xtable 1.8-4 package
+% Fri Nov 08 23:54:15 2019
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{rrr}
+		\hline
+		& Normal.Yes & Normal.No \\ 
+		\hline
+		Treatment & 7.00 & 8.00 \\ 
+		Control & 0.00 & 15.00 \\ 
+		\hline
+	\end{tabular}
+\end{table}
+% latex table generated in R 3.6.1 by xtable 1.8-4 package
+% Fri Nov 08 23:54:15 2019
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{rllll}
+		\hline
+		& V1 & Estimate & CI Lower & CI Uppder \\ 
+		\hline
+		A & Woolf (Wald) & Inf & NaN & Inf \\ 
+		B & Cornfield Exact & Inf & 1.9784 & Inf \\ 
+		C(1) & Profile Likelihood & NA & NA & NA \\ 
+		C(2) & Profe Likelihood, counts+1 & 11.9346 & 1.7292 & 335.5171 \\ 
+		\hline
+	\end{tabular}
+\end{table}
 
 \subsection*{Problem {\#}3.31}
 \outstanding{}
