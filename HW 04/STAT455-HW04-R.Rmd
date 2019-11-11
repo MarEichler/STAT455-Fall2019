@@ -189,13 +189,12 @@ colnames(results) <- c("", "CI Lower", "CI Uppder")
 kable(results, align='lrrr', booktabs=TRUE)
 ```
 ```{r, echo=FALSE, eval=FALSE}
-xtable(Count)
 xtable(results)
 ```
 
 
-### In-Class Example 
-```{r, message=FALSE}
+```{r, message=FALSE, eval=FALSE, echo=FALSE }
+#In class example to check to see if getting correct values 
 names.r <- c("Risk=Y", "Risk=N")
 names.c <- c("Disease=Y", "Disease=N")
 r <-length(names.r)
@@ -231,8 +230,42 @@ colnames(results) <- c("", "CI Lower", "CI Uppder")
 kable(results, align='lrrr', booktabs=TRUE)
 ```
 
+\newpage 
+## Problem 3.31
+```{r}
+func_Xsqcells.iid <- function(matrix, i, j){
+n.ij <- matrix[i, j]
+n <- sum(matrix)
+p.1plus <- sum(matrix[1,])/n
+p.plus1 <- sum(matrix[,1])/n
+theta <- (p.1plus + p.plus1) / 2
+if (i==1 & j==1) {mu.hat <- n * theta^2}
+if (i==1 & j==2) {mu.hat <- n * theta * (1 - theta)}
+if (i==2 & j==1) {mu.hat <- n * theta * (1 - theta)}
+if (i==2 & j==2) {mu.hat <- n * (1 - theta)^2 }
+(n.ij - mu.hat)^2 / mu.hat }
 
-`
+func_chisqtest.iid <- function(matrix){
+I <- dim(matrix)[1]
+J <- dim(matrix)[2]
+row <- c()
+for (i in 1:I){
+  vec <- rep(i, J)
+  row <- c(row, vec)}
+col <- c(rep(c(1:J), I))
+Xsq <- sum(mapply(func_Xsqcells, matrix=rep(list(matrix), length(row)), i=row, j=col))
+df <- sum(dim(matrix)) - 2
+pval <- 1- pchisq(Xsq, df)
+paste("X-squared=", round(Xsq, 5), ", df=", df, ", p-value=", decimal(pval, 4))}
+```
+
+```{r}
+shots <- matrix(c(251, 48, 34, 5), nrow=2, ncol=2)
+func_chisqtest(shots)
+func_chisqtest.iid(shots)
+```
+
+
 
 
 
@@ -243,6 +276,7 @@ kable(results, align='lrrr', booktabs=TRUE)
 
 
 ```{r, echo=FALSE, eval=FALSE}
+#EXTRA WORK FOR 3.15, DIFFERENT WAYS OF CALCULATING CONFIDENCE INTERVAL 
 #WOOLF'S CI
 se_log <- sqrt(  sum(1/count))
 z.star <- qnorm(0.975, 0, 1)

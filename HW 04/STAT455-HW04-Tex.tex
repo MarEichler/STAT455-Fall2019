@@ -50,38 +50,24 @@ $G^2$ & 0.2858 & 0.5930 & Do not reject $H_0$, there is evidence that the first 
 
 \subsection*{Problem {\#}3.9(a)}
 
-\begin{table}[!htb]
-	\begin{minipage}{.5\linewidth}
-		\caption{Counts}
-		\centering 
-		\begin{tabular}{lrr}
-			\toprule
-			& Drugs & No Drugs\\
-			\midrule
-			Schizophrenia & 105 & 8\\
-			Affective disorder & 12 & 2\\
-			Neurosis & 18 & 19\\
-			Personality disorder & 47 & 52\\
-			Special Systems & 0 & 13\\
-			\bottomrule
-	\end{tabular} \end{minipage}%
-	\begin{minipage}{.5\linewidth}
-		\centering
-		\caption{Perason Standard Residuals} 
-		\begin{tabular}{lrr}
-			\toprule
-			& Drugs & No Drugs\\
-			\midrule
-			Schizophrenia & 7.874526 & -7.874526\\
-			Affective disorder & 1.602262 & -1.602262\\
-			Neurosis & -2.385315 & 2.385315\\
-			Personality disorder & -4.841701 & 4.841701\\
-			Special Systems & -5.139491 & 5.139491\\
-			\bottomrule
-	\end{tabular} \end{minipage} 
-\end{table}
+\begin{wraptable}{l}{3in} 
+	\vspace{-12pt} 
+	\caption{Standardized Pearson Residuals} 
+	\centering
+\begin{tabular}{lrr}
+	\hline
+	& Drugs & No Drugs \\ 
+	\hline
+	Schizophrenia & 7.87 & -7.87 \\ 
+	Affective disorder & 1.60 & -1.60 \\ 
+	Neurosis & -2.39 & 2.39 \\ 
+	Personality disorder & -4.84 & 4.84 \\ 
+	Special systems & -5.14 & 5.14 \\ 
+	\hline
+\end{tabular}
+\end{wraptable}
 
-\outstanding{conclusion}
+The Pearson residuals are quite large which indicates that there is a lack of fit.  This is likely due to the different proportion of those who received drugs.  For Schizophrenia and Affective disorder, there are\textit{ more people who are} assigned drugs than those who are not assigned drugs.  Where as with Neurosis, Personality disorder and Special systems, there are \textit{more people who are not} assigned drugs than those who are assigned drugs.  This explains why the first two rows have standardized residuals with signs (+, -) and the last three rows have standardized residuals with signs (-, +).  
 
 \subsection*{Problem {\#}3.12}
 Gamma, $\gamma$: 0.3873 \\
@@ -98,52 +84,111 @@ Gamma is 0.3873 which indicates that when attitudes disagree (i.e. counts that a
 	& Control							& \multicolumn{1}{|c}{0}	& \multicolumn{1}{|c|}{15} \\ \cline{3-4}
 \end{tabular} \\
 
-\begin{tabular}{l l l}
- & \textbf{Type of CI for OR} & \textbf{95\% CI} \\ \hline
-(a)  & Woolf (i.e. Wald) & $(0, \infty)$  \\ \hline 
-(b) & Cornfield's Exact & 
-\begin{tabular}{l l }
-	SAS & $(2.6460, \infty)$ \\
-	R & $(1.9784, \infty)$ \\
-	Answer & $(0.618,\ \infty)$ \\
-	\multicolumn{2}{c}{ \outstanding{Which one??}}
-	\end{tabular}\\ \hline 
-(c) & Profile Likelihood & $(5.117, \infty)$ \\ \hline 
-\end{tabular} 
+% latex table generated in R 3.6.1 by xtable 1.8-4 package
+% Sun Nov 10 14:53:16 2019
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{rlll}
+		\hline
+		& V1 & CI Lower & CI Uppder \\ 
+		\hline
+		A & Woolf (Wald) & NaN & Inf \\ 
+		B & Cornfield Exact & 1.9784 & Inf \\ 
+		C(1) & Profile Likelihood & 0.0000 & NA \\ 
+		C(2) & Profe Likelihood, counts+1 & 2.1242 & 286.7235 \\ 
+		\hline
+	\end{tabular}
+\end{table}
 
-% latex table generated in R 3.6.1 by xtable 1.8-4 package
-% Fri Nov 08 23:54:15 2019
-\begin{table}[ht]
-	\centering
-	\begin{tabular}{rrr}
-		\hline
-		& Normal.Yes & Normal.No \\ 
-		\hline
-		Treatment & 7.00 & 8.00 \\ 
-		Control & 0.00 & 15.00 \\ 
-		\hline
-	\end{tabular}
-\end{table}
-% latex table generated in R 3.6.1 by xtable 1.8-4 package
-% Fri Nov 08 23:54:15 2019
-\begin{table}[ht]
-	\centering
-	\begin{tabular}{rllll}
-		\hline
-		& V1 & Estimate & CI Lower & CI Uppder \\ 
-		\hline
-		A & Woolf (Wald) & Inf & NaN & Inf \\ 
-		B & Cornfield Exact & Inf & 1.9784 & Inf \\ 
-		C(1) & Profile Likelihood & NA & NA & NA \\ 
-		C(2) & Profe Likelihood, counts+1 & 11.9346 & 1.7292 & 335.5171 \\ 
-		\hline
-	\end{tabular}
-\end{table}
+Having a cell with a value of 0 makes analysis difficult.  
 
 \subsection*{Problem {\#}3.31}
-\outstanding{}
+For a 2 $\times$2 table, consider $H_0: \pi_{11} = \theta^2, \quad \pi_{12} = \pi_{21} = \theta(1 - \theta),\quad  \pi_{22} = (1 - \theta)^2$.  
+\subsubsection*{Problem {\#}3.31(a)} 
+Show that the marginal distributions are identical and that independence holds.  
+
+$\begin{array}{ccc}
+\cline{1-2} 
+\multicolumn{1}{|c}{\pi_{11}} & \multicolumn{1}{|c|}{\pi_{12}}  & \pi_{1+} \\ \cline{1-2}
+\multicolumn{1}{|c}{\pi_{21}} & \multicolumn{1}{|c|}{\pi_{22}}  & \pi_{2+} \\ \cline{1-2}
+\pi_{+1} & \pi_{+2} & 
+\end{array}
+\quad 
+\stackrel{H_0}{=}  \quad 
+\begin{array}{ccc}
+\cline{1-2} 
+\multicolumn{1}{|c}{\theta^2} & \multicolumn{1}{|c|}{\theta(1 - \theta)}  & \theta \\ \cline{1-2}
+\multicolumn{1}{|c}{\theta(1 - \theta) } & \multicolumn{1}{|c|}{(1- \theta)^2}  & 1 - \theta \\ \cline{1-2}
+\theta & 1 - \theta & 
+\end{array}$ 
+
+$ \left. 
+\begin{array}{l }
+\pi_{+1} = \pi_{+1} = \theta \\
+\pi_{+2} = \pi_{+2} = 1 - \theta 
+\end{array} \right\} \text{marginal distributions are the same}$
+
+$ \left. 
+\begin{array}{r c c c l }
+\theta^2 &=& \pi_{11} = \pi_{1+} \pi_{+1} &=& \theta \cdot \theta = \theta^2 \\
+\theta(1 - \theta) &=& \pi_{12} = \pi_{1+} \pi_{+2} &=& \theta \cdot (1 - \theta) \\
+\theta(1 - \theta) &=& \pi_{21} = \pi_{2+} \pi_{+1} &=& (1 - \theta) \cdot \theta  \\
+(1 - \theta)^2 &=& \pi_{22} = \pi_{2+} \pi_{+2} &=& (1 - \theta) \cdot (1 - \theta) = (1 - \theta)^2 
+\end{array} \right\} \text{independence holds}$
+
+\newpage 
+\subsubsection*{Problem {\#}3.31(b)} 
+\begin{align*}
+f & \propto \pi_{11}^{n_{11}} \pi_{12}^{n_{12}} \pi_{21}^{n_{21}} \pi_{22}^{n_{22}}
+\\
+& \stackrel{H_0}{=} (\theta^2)^{n_{11}} \cdot (\theta(1 - \theta))^{n_{12}+n_{21}} \cdot ((1 - \theta)^2)^{n_{22}}
+\\
+L & =  n_{11} \log\left[ \theta^2 \right] + (n_{12} + n_{21}) \log \left[ \theta(1 - \theta) \right] + n_{22} \log \left[ (1 - \theta)^2 \right] 
+\\
+\frac{ \partial L}{ \partial \theta} & = \frac{2 n_{11}}{\theta} + \frac{n_{12} + n_{21}}{\theta} - \frac{n_{12} + n_{21}}{(1 - \theta)} - \frac{ 2 n_{22} }{(1 - \theta) }
+\\[0.5ex]
+& = \frac{ 2 n_{11} + n_{12} + n_{21}}{\theta} - \frac{2 n_{22} + n_{12} + n_{21}}{1 - \theta} \set 0 
+\\[0.5ex]
+\implies \hat{\theta} & = \frac{ 2 n_{11} + n_{12} + n_{21} }{2(n_{11} + n_{12} + n_{21} + n_{22}  )} 
+\qquad \qquad  \begin{tiny}
+\begin{array}{r c l}
+n &=& n_{11} + n_{12} + n_{21} + n_{22} \\
+n_{+1} &=&  n_{11} + n_{21} \\
+n_{1+} &=& n_{11} + n_{12}
+\end{array}
+\end{tiny}
+\\[1ex]
+& = \frac{ n_{1+} + n_{+1} }{2 n} = \frac{1}{2} \left( \frac{n_{1+}}{n} \cdot \frac{n_{+1}}{n} \right)  
+\\[0.5ex]
+\hat{\theta} &= \frac{ p_{1+} + p_{+1} }{2}
+\end{align*}
+
+\subsubsection*{Problem {\#}3.31(c)}
+
+Calculate the expected frequencies: 
+
+$
+\arraycolsep=1.5pt \def\arraystretch{1.2}
+\begin{array}{r c l c l}
+\hat{\mu}_{11} & = & n \cdot \hat{\pi}_{11} &=& n \cdot \hat{\theta}^2 \\
+\hat{\mu}_{12} & = &n \cdot \hat{\pi}_{12} &=& n \cdot \hat{\theta}(1 - \hat{\theta}) \\ 
+\hat{\mu}_{21} & = &n \cdot \hat{\pi}_{21} &=& n \cdot \hat{\theta}(1 - \hat{\theta}) \\
+\hat{\mu}_{22} & = &n \cdot \hat{\pi}_{22} &=& n \cdot (1 - \hat{\theta})^2
+\end{array}$ 
+
+Using the expected frequencies obtain Pearson's $X^2 = \sum \frac{ \left( n_{ij} - \hat{\mu}_{ij} \right)^2 }{ \hat{\mu}_{ij} } $ and compare to a $\chi^2$ distribution with $df= 2$ ($df = \text{dim}(H_0 \cup H_1) - \text{dim}(H_0) = 3 - 1 = 2$).  Note that when testing independence for a 2$\times$2 table $df = 1$.   
 
 
+\subsubsection*{Problem {\#}3.31(c)}
+
+\tabulinesep=1mm
+\begin{tabu}{X[l, .7] X[l, 1] X[l, .3] X[l, 1] X[l, 5]}  
+\textbf{$H_0$} 	& $X^2$ 	& $df$  & \textbf{p-value}	& \textbf{Conclusion} \\ \hline 
+	indep.		& 0.27274 	& 1 	& 0.6015 			& Do not reject $H_0$, there is evidence that the first and second shot are independent  \\ \hline
+	iid			& 0.27274 	& 2 	& 0.8725 			& Do not reject $H_0$, there is evidence that the first and second shot are iid  \\\hline  
+\end{tabu}
+
+It is plausible that the free throws are independent and identically distributed.  
 
 
 
