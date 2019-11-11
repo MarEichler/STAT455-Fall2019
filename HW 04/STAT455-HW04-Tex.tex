@@ -45,7 +45,7 @@ Data is not ordinal so a restricted alternative is not necessary.
 \begin{tabu}{X[l, 1] X[l, 1] X[l, 1] X[l, 4]}
 \textbf{Statistics} & \textbf{Value} & \textbf{p-value} & \textbf{Conclusion} \\ \hline 
 $X^2$ & 0.2727 & 0.6015 & Do not reject $H_0$, there is evidence that the first and second shot are independent \\ \hline
-$G^2$ & 0.2858 & 0.5930 & Do not reject $H_0$, there is evidence that the first and second shot are independent \\ \hline 
+$G^2$ & 2.8060 & 0.2459 & Do not reject $H_0$, there is evidence that the first and second shot are independent \\ \hline 
 \end{tabu}
 
 \subsection*{Problem {\#}3.9(a)}
@@ -82,23 +82,18 @@ Gamma is 0.3873 which indicates that when attitudes disagree (i.e. counts that a
 	&			& Yes	& No	\\ \cline{3-4} 
 	\multirow{2}{*}{Group} & Treatment	& \multicolumn{1}{|c}{7}	& \multicolumn{1}{|c|}{8}\\ \cline{3-4} 
 	& Control							& \multicolumn{1}{|c}{0}	& \multicolumn{1}{|c|}{15} \\ \cline{3-4}
-\end{tabular} \\
-
-% latex table generated in R 3.6.1 by xtable 1.8-4 package
-% Sun Nov 10 14:53:16 2019
-\begin{table}[ht]
-	\centering
-	\begin{tabular}{rlll}
+\end{tabular} 
+\hfill 
+	\begin{tabular}{rll}
 		\hline
-		& V1 & CI Lower & CI Uppder \\ 
+		& Name  & 95\% CI  \\	\hline
+		A & Woolf (Wald) & $(0.000, \infty) $ \\
+		B & Cornfield Exact & $(0.000, \infty)$ \\
+		C & Profile Likelihood & $(5.118, \infty)$  \\ 
 		\hline
-		A & Woolf (Wald) & NaN & Inf \\ 
-		B & Cornfield Exact & 1.9784 & Inf \\ 
-		C(1) & Profile Likelihood & 0.0000 & NA \\ 
-		C(2) & Profe Likelihood, counts+1 & 2.1242 & 286.7235 \\ 
-		\hline
-	\end{tabular}
-\end{table}
+	\end{tabular} 
+\hfill 
+\phant \\
 
 Having a cell with a value of 0 makes analysis difficult.  
 
@@ -136,7 +131,6 @@ $ \left.
 (1 - \theta)^2 &=& \pi_{22} = \pi_{2+} \pi_{+2} &=& (1 - \theta) \cdot (1 - \theta) = (1 - \theta)^2 
 \end{array} \right\} \text{independence holds}$
 
-\newpage 
 \subsubsection*{Problem {\#}3.31(b)} 
 \begin{align*}
 f & \propto \pi_{11}^{n_{11}} \pi_{12}^{n_{12}} \pi_{21}^{n_{21}} \pi_{22}^{n_{22}}

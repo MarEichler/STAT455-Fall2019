@@ -119,6 +119,11 @@ cat(c("\\begin{table}[!htb]
 ))  
 ```
 
+```{r, eval=FALSE, echo=FALSE}
+xtable(stdreschi, align='lrr')
+```
+
+
 ## Problem 3.12
 ```{r}
 names.r <- c("Less than highschool", "Highschool", "More than highschool")
