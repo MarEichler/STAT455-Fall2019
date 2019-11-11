@@ -174,25 +174,19 @@ y.data <- c(rep(1, Count[1,1]), rep(0, Count[1,2]), rep(1, Count[2,1]), rep(0, C
 x.data <- c(rep(1, Count[1,1]), rep(1, Count[1,2]), rep(0, Count[2,1]), rep(0, Count[2,2]))
 df.data <- data.frame("Y"=y.data, "X"=x.data)
 logit <- glm(Y ~ X, data=df.data, family=binomial)
-C1 <- exp(confint(logit)[2,])
+C <- exp(confint(logit)[2,])
 
-#PROFILE LIKELIHOOD adj
-Count.adj <- Count+1
-y.data.adj <- c(rep(1, Count.adj[1,1]), rep(0, Count.adj[1,2]), rep(1, Count.adj[2,1]), rep(0, Count.adj[2,2]))
-x.data.adj <- c(rep(1, Count.adj[1,1]), rep(1, Count.adj[1,2]), rep(0, Count.adj[2,1]), rep(0, Count.adj[2,2]))
-df.data.adj <- data.frame("Y"=y.data.adj, "X"=x.data.adj)
-logit.adj <- glm(Y ~ X, data=df.data.adj, family=binomial)
-C2 <- exp(confint(logit.adj)[2,])
+D <- c(5.117, Inf)
 
-
-
-names <- c("Woolf (Wald)", "Cornfield Exact", "Profile Likelihood", "Profe Likelihood, counts+1")
-results<- cbind( names, decimal(rbind(A, B, C1, C2), dec))
-rownames(results) <- c("A", "B", "C(1)", "C(2)")
-colnames(results) <- c("", "CI Lower", "CI Uppder")
+names <- c("Woolf (Wald)", "Cornfield Exact", "Profile Likelihood", "Profile Likelihood, SAS")
+results<- cbind( names, decimal(rbind(A, B, C, D), dec))
+rownames(results) <- c("A", "B", "C", "D")
+colnames(results) <- c("Name", "CI Lower", "CI Uppder")
 
 kable(results, align='lrrr', booktabs=TRUE)
 ```
+
+
 ```{r, echo=FALSE, eval=FALSE}
 xtable(results)
 ```
@@ -258,7 +252,7 @@ for (i in 1:I){
   vec <- rep(i, J)
   row <- c(row, vec)}
 col <- c(rep(c(1:J), I))
-Xsq <- sum(mapply(func_Xsqcells, matrix=rep(list(matrix), length(row)), i=row, j=col))
+Xsq <- sum(mapply(func_Xsqcells.iid, matrix=rep(list(matrix), length(row)), i=row, j=col))
 df <- sum(dim(matrix)) - 2
 pval <- 1- pchisq(Xsq, df)
 paste("X-squared=", round(Xsq, 5), ", df=", df, ", p-value=", decimal(pval, 4))}
