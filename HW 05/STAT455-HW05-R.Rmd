@@ -1,0 +1,36 @@
+---
+title: STAT 455 Homework 05
+author: Martha Eichlersmith
+date: 2019-11-21
+output:
+  pdf_document:
+    fig_caption: yes
+header-includes:
+  - \usepackage{color}
+  - \usepackage{mathtools}
+  - \usepackage{amsbsy} #bold in mathmode
+  - \usepackage{nicefrac} # for nice fracs 
+  - \usepackage{booktabs}
+  - \usepackage{geometry}
+  - \usepackage{caption} #to remove automatic table name and number - \captionsetup[table]{labelformat=empty}, put code under ---
+geometry: "left=1.75cm,right=1.75cm,top=1.5cm,bottom=2cm" 
+
+---
+
+\captionsetup[table]{labelformat=empty} 
+```{r setup, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+library(ggplot2) #ggplot
+library(readr) #import CSV
+library(gridExtra) #organize plots
+library(grid) #organize plots
+library(latex2exp) #latex in ggplot titles 
+library(matlib) #A = matrix, inv(A) = A^{-1} 
+library(numDeriv) #calculate numerical first and second order derivatives 
+library(gtable) #for tablegrob functions 
+#library(kableExtra) #for kable functions
+library(dplyr) #for piping 
+library(MCMCpack) #for dirichelt
+knitr::opts_chunk$set(echo=FALSE, fig.width = 10, fig.height = 4)
+decimal <- function(x, k) trimws(format(round(x, k), nsmall=k))
+dec <- 5
+```
