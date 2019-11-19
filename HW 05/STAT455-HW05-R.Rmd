@@ -16,23 +16,20 @@ header-includes:
 geometry: "left=1.75cm,right=1.75cm,top=1.5cm,bottom=2cm" 
 
 ---
-
-\captionsetup[table]{labelformat=empty} 
 ```{r setup, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 library(ggplot2) #ggplot
 library(readr) #import CSV
 library(gridExtra) #organize plots
 library(grid) #organize plots
 library(latex2exp) #latex in ggplot titles 
-library(matlib) #A = matrix, inv(A) = A^{-1} 
-library(numDeriv) #calculate numerical first and second order derivatives 
 library(gtable) #for tablegrob functions 
 #library(kableExtra) #for kable functions
 library(dplyr) #for piping 
-library(MCMCpack) #for dirichelt
-knitr::opts_chunk$set(echo=FALSE, fig.width = 10, fig.height = 4)
+library(xtable) #for latex table output 
+knitr::opts_chunk$set(fig.width = 10, fig.height = 4)
+#knitr::opts_chunk$set(echo=FALSE)
 decimal <- function(x, k) trimws(format(round(x, k), nsmall=k))
-dec <- 5
+dec <- 3
 ```
 
 
@@ -45,30 +42,87 @@ Attempt <- c(5, 11, 14, 12, 7, 10, 14, 15,
              12, 4, 27, 17, 12, 9, 12, 10, 
              12, 6, 39, 13, 17, 6 ,12) #number of free throw attempt
 Miss <- Attempt - Made #number of free throws missed 
-Y <- Made/Attempt #rate 
 ```
 
 ```{r binarydata}
-l <- length(Game)
-FT <- c() #free throws 
-G <- c() 
+l <- length(Game) #23
+FT <- c() #free throws vector (binary: 0 or 1)
+G <- c() #game vector 
 for (i in 1:l){
     made.i <- c(rep(1, Made[i]))
     miss.i <- c(rep(0, Miss[i]))
     new.game <- c(rep(Game[i], length(made.i)+length(miss.i)))
     FT <- c(FT, made.i, miss.i)
-    G <- c(G, new.game)
-}
+    G <- c(G, new.game)}
 
-df.data <- data.frame("FT"=FT, "G"=G)
+K <- c() 
+for (j in 1:l){
+  log.N.j <- log(Attempt[j])
+  new.k <- rep(log.N.j, Attempt[j])
+  K <- c(K, new.k)}
+
+df.data <- data.frame("FT"=FT, "G"=G, "K"=K)
 ```
 
-$H_0: F \text{ independent } G \quad \text{vs} \quad H_1: \text{ not } H_1$
+```{r samerate, warning=FALSE}
+#test if pi_i- \alpha for each pi_i
+#use linear regression 
+lin.reg <- glm(FT ~ 1, data=df.data)
+alpha <- summary(lin.reg)$coef[1,1]
+se.alpha <- summary(lin.reg)$coef[1,2]
+z.star <- qnorm(0.975)
+CI.alpha <- cbind(alpha - z.star*se.alpha, alpha + z.star*se.alpha)
+print.CI.alpha <- paste(decimal(CI.alpha, dec), collapse=",")
 
-```{r}
-fit <- glm(FT ~ as.factor(G), data=df.data)
-fit$coefficients
+#chisq test - check Goodness of Fit 
+table <- cbind(Made, Miss)
+chi.test <- chisq.test(table)
+X2 <- chi.test$statistic
+pval <- chi.test$p.value
+
+name <- c("$\\alpha$"
+          , "Standard Error of $\\alpha$"
+          , "Confidence Interval for $\\alpha$")
+value <- c(decimal(alpha, dec), 
+           decimal(se.alpha, dec),
+           paste("(", print.CI.alpha, ")"))
+samerate <- data.frame("Statistic" = name, "Values" = value)
+caption.samerate <- c("Model $\\pi_i = \\alpha$")
+knitr::kable(samerate, align='lr',caption=paste(caption.samerate))
 ```
 
+```{r sametableLaTex, echo=FALSE, eval=FALSE}
+xtable.sametable <- xtable(samerate, align="llr", caption=paste(caption.samerate))
+print(xtable.sametable
+      ,caption.placement="top"
+      ,sanitize.text.function = function(x){x}
+      )
+```
 
+```{r samerate.phi, warning = FALSE}
+phi <- X2/(length(Game)-1)
+se.phi <- sqrt(phi)*se.alpha
+z.star <- qnorm(0.975)
+CI.phi <- cbind(alpha - z.star*se.phi, alpha + z.star*se.phi)
+print.CI.phi <- paste(decimal(CI.phi, dec), collapse=",")
+
+
+name <- c("Dispersion, $\\hat{\\phi}$"
+          , "Scale, $\\sqrt{\\hat{\\phi}}$"
+          , "Standard Error of $\\alpha$, Adjusted"
+          , "Confidence Interval for $\\alpha$, Adjusted")
+value <- c(decimal(phi, dec), decimal(sqrt(phi), dec), decimal(se.phi, dec),
+           paste("(", print.CI.phi, ")"))
+samerate.phi <- data.frame("Statistic" = name, "Values" = value)
+caption.samerate.phi <- c("Model $\\pi_i = \\alpha$, Estimate of $\\phi$ and Adjustements")
+knitr::kable(samerate.phi, align="lr", caption=paste(caption.samerate.phi))
+```
+
+```{r sametable.phiLaTex, echo=FALSE, eval=FALSE}
+xtable.sametable.phi <- xtable(samerate.phi, align="llr", caption=paste(caption.samerate.phi))
+print(xtable.sametable.phi
+      ,caption.placement="top"
+      ,sanitize.text.function = function(x){x}
+      )
+```
 

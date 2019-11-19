@@ -1,0 +1,71 @@
+\documentclass[12pt, letterpaper]{article}
+
+\input{C:/Users/MarEichler17/Documents/MYE-Documents/SCHOOL/Northwestern/preamble}
+ 
+
+
+
+ %line spacing
+ \usepackage{setspace}
+ \setstretch{1.2}
+ 
+ %header, pagestyle
+ \geometry{pass, letterpaper}
+ \pagestyle{fancy}
+ \fancyhf{} % sets both header and footer to nothing
+ \renewcommand{\headrulewidth}{0pt}
+ \lhead{STAT 455 Fall 2019 \\ Homework 05}
+ \rhead{Martha Eichlersmith \\ Page \thepage \text{ of} \pageref{LastPage}}
+ \setlength{\headsep}{48pt}
+ \renewcommand{\sectionmark}[1]{\gdef\currsection{\thesection \ #1}}
+ \renewcommand{\subsectionmark}[1]{\markright{\currsection\ $\mid$ \thesubsection \  #1}}
+
+
+
+\begin{document}
+
+
+% latex table generated in R 3.6.1 by xtable 1.8-4 package
+% Tue Nov 19 13:37:09 2019
+\begin{table}[ht]
+	\centering
+	\caption{Model $\pi_i = \alpha$} 
+	\begin{tabular}{lll}
+		\hline
+		& Statistic & Values \\ 
+		\hline
+		1 & $\alpha$ & 0.45608 \\ 
+		2 & Standard Error & 0.02900 \\ 
+		3 & Confidence Interval & ( 0.39924,0.51292 ) \\ 
+		\hline
+	\end{tabular}
+\end{table}
+
+% latex table generated in R 3.6.1 by xtable 1.8-4 package
+% Tue Nov 19 13:49:22 2019
+\begin{table}[ht]
+	\centering
+	\caption{Model $\pi_i = \alpha$, Estimate of $\phi$ and Adjustements} 
+	\begin{tabular}{lll}
+		\hline
+		& Statistic & Values \\ 
+		\hline
+		1 & $\hat{\phi}$ & 1.61413 \\ 
+		2 & $\sqrt \hat{\phi}$ & 1.27048 \\ 
+		3 & Standard Error, Adjusted & 0.03684 \\ 
+		4 & Confidence Interval, Adjusted & ( 0.38387,0.52829 ) \\ 
+		\hline
+	\end{tabular}
+\end{table}
+
+
+
+
+
+\end{document}
+
+
+
+%  \text{\textcolor{red}{$$}}
+%  \text{\textcolor{blue}{$$}}
+%  \text{\textcolor{Green}{$$}}
