@@ -1,6 +1,6 @@
 ---
-title: STAT 455 Homework 05 - R Code 
-author: Martha Eichlersmith
+#title: STAT 455 Homework 05 - R Code 
+#author: Martha Eichlersmith
 output:
   pdf_document:
     fig_caption: yes
@@ -13,7 +13,14 @@ header-includes:
   - \usepackage{booktabs}
   - \usepackage{geometry}
   - \usepackage{caption} #to remove automatic table name and number - \captionsetup[table]{labelformat=empty}, put code under ---
-geometry: "left=0.5in,right=0.5in,top=1.5cm,bottom=2cm" 
+  - \usepackage{lastpage} #for pageref*{LastPage} - to get total # of pages
+  - \usepackage{fancyhdr}
+  - \pagestyle{fancy}
+  - \fancyhf{}
+  - \fancyhead[LE,LO]{STAT 455 Fall 2019 \\ Homework 05 APPENDIX}
+  - \fancyhead[RE,RO]{Martha Eichlersmith \\ Page \thepage\ of\ \pageref*{LastPage}}  
+#left-even pages (LE) right-odd pages (RE)
+geometry: "left=0.75in,right=0.75in,top=1.1in,bottom=1in" 
 
 ---
 ```{r setup, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
@@ -104,12 +111,8 @@ chi.test <- chisq.test(table)
 X2 <- chi.test$statistic
 pval <- chi.test$p.value
 df <- chi.test$parameter 
-paste("Pearson X-sq Statistic="
-      , decimal(X2, dec), "on"
-      , df, "degrees of freedom, with p-value of"
-      , decimal(pval, dec)
-      )
-
+paste("Pearson X-sq Statistic=", decimal(X2, dec), "on", df, 
+      "degrees of freedom, with p-value of", decimal(pval, dec))
 ```
 
 ## Local Lack of Fit - Standardized Residuals  
@@ -141,11 +144,8 @@ chi.test.no14 <- chisq.test(table.no14)
 X2.no14 <- chi.test.no14$statistic
 pval.no14 <- chi.test.no14$p.value
 df.no14 <- chi.test.no14$parameter 
-paste("Pearson X-sq Statistic="
-      , decimal(X2.no14, dec), "on"
-      , df.no14, "degrees of freedom, with p-value of"
-      , decimal(pval.no14, dec)
-      )
+paste("Pearson X-sq Statistic=" , decimal(X2.no14, dec), "on"
+      , df.no14, "degrees of freedom, with p-value of", decimal(pval.no14, dec))
 ```
 
 ```{r res.no14}
@@ -176,9 +176,7 @@ print.CI.phi <- paste(decimal(CI.phi, dec), collapse=",")
 ```
 
 ```{r phi.table}
-name <- c("$\\hat{\\alpha}$"
-          , "Standard Error of $\\alpha$"
-          , "Confidence Interval for $\\alpha$")
+name <- c("$\\hat{\\alpha}$", "Standard Error of $\\alpha$", "Confidence Interval for $\\alpha$")
 value <- c(decimal(alpha.phi, dec),  decimal(alpha.se.phi, dec),
            paste("(", print.CI.phi, ")"))
 phi.table <- data.frame("Statistic" = name, "Values" = value)
