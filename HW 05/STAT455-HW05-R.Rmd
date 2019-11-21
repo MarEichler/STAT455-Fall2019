@@ -1,8 +1,6 @@
 ---
-title: STAT 455 Homework 05
-subtitle: R-Code
+title: STAT 455 Homework 05 - R Code 
 author: Martha Eichlersmith
-date: 2019-11-21
 output:
   pdf_document:
     fig_caption: yes
@@ -15,7 +13,7 @@ header-includes:
   - \usepackage{booktabs}
   - \usepackage{geometry}
   - \usepackage{caption} #to remove automatic table name and number - \captionsetup[table]{labelformat=empty}, put code under ---
-geometry: "left=1.75cm,right=1.75cm,top=1.5cm,bottom=2cm" 
+geometry: "left=0.5in,right=0.5in,top=1.5cm,bottom=2cm" 
 
 ---
 ```{r setup, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
@@ -34,6 +32,7 @@ decimal <- function(x, k) trimws(format(round(x, k), nsmall=k))
 dec <- 3
 ```
 
+
 ## Put in Raw Data  
 ```{r rawdata}
 Game <- c(1:23) #game number 
@@ -44,7 +43,6 @@ Attempt <- c(5, 11, 14, 12, 7, 10, 14, 15,
              12, 4, 27, 17, 12, 9, 12, 10, 
              12, 6, 39, 13, 17, 6 ,12) #number of free throw attempt
 Miss <- Attempt - Made #number of free throws missed 
-Prop <- Made/Attempt #proportion made
 ```
   
 ## Convert Data to Binary Data
@@ -61,7 +59,7 @@ for (i in 1:l){
 df.data <- data.frame("FT"=FT, "G"=G)
 ```
 
-# Common Probability  
+# Constant Probability  
 
 ## Estimate $\alpha$ 
 ```{r reg, warning=FALSE, message=FALSE}
@@ -80,7 +78,7 @@ value <- c(decimal(alpha, dec),
            decimal(se.alpha, dec),
            paste("(", print.CI.alpha, ")"))
 alpha.table <- data.frame("Statistic" = name, "Values" = value)
-caption.alpha.table <- c("Common Probability Model -  $\\alpha$")
+caption.alpha.table <- c("Constant Probability Model -  $\\alpha$")
 knitr::kable(alpha.table, align='lr',caption=paste(caption.alpha.table))
 ```
   
@@ -107,10 +105,8 @@ X2 <- chi.test$statistic
 pval <- chi.test$p.value
 df <- chi.test$parameter 
 paste("Pearson X-sq Statistic="
-      , decimal(X2, dec)
-      , "on"
-      , df
-      , "degrees of freedom, with p-value of"
+      , decimal(X2, dec), "on"
+      , df, "degrees of freedom, with p-value of"
       , decimal(pval, dec)
       )
 
@@ -125,8 +121,8 @@ res.table <- cbind(Game, stdreschi)
 res.table <- res.table[order(-abs(stdreschi)),]
   #put residuals in order from larges abs value to smallest abs value 
 colnames(res.table) <- c("Game", "Standardized Residuals")
-caption.res <- c("Common Probability Model: Standardized Residuals")
-res.table
+caption.res <- c("Constant Probability Model: Standardized Residuals")
+res.table #sorted from largest to smallest abs value 
 ```
 
 ```{r resLatex, echo=FALSE, eval=FALSE}
@@ -146,10 +142,8 @@ X2.no14 <- chi.test.no14$statistic
 pval.no14 <- chi.test.no14$p.value
 df.no14 <- chi.test.no14$parameter 
 paste("Pearson X-sq Statistic="
-      , decimal(X2.no14, dec)
-      , "on"
-      , df.no14
-      , "degrees of freedom, with p-value of"
+      , decimal(X2.no14, dec), "on"
+      , df.no14, "degrees of freedom, with p-value of"
       , decimal(pval.no14, dec)
       )
 ```
@@ -160,7 +154,7 @@ decimal(max(abs(stdreschi)), dec) #make standardize residual in absolute vaule
 ```
 
 
-# Common Probability Model with Over-disperion   
+# Constant Probability Model with Over-disperion   
 
 ## Estimate Dispersion and Scale 
 ```{r phi}
@@ -188,7 +182,7 @@ name <- c("$\\hat{\\alpha}$"
 value <- c(decimal(alpha.phi, dec),  decimal(alpha.se.phi, dec),
            paste("(", print.CI.phi, ")"))
 phi.table <- data.frame("Statistic" = name, "Values" = value)
-caption.phi.table <- c("Common Probability Model assuming $\\phi \\neq 1$ - $\\alpha$")
+caption.phi.table <- c("Constant Probability Model assuming $\\phi \\neq 1$ - $\\alpha$")
 knitr::kable(phi.table, align="lr", caption=paste(caption.phi.table))
 ```
 ```{r phi.tableLaTex, echo=FALSE, eval=FALSE}
