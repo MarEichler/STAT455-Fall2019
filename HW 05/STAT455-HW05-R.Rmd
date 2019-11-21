@@ -1,10 +1,12 @@
 ---
 title: STAT 455 Homework 05
+subtitle: R-Code
 author: Martha Eichlersmith
 date: 2019-11-21
 output:
   pdf_document:
     fig_caption: yes
+    number_sections: true #give section automic numbers 
 header-includes:
   - \usepackage{color}
   - \usepackage{mathtools}
@@ -23,16 +25,16 @@ library(gridExtra) #organize plots
 library(grid) #organize plots
 library(latex2exp) #latex in ggplot titles 
 library(gtable) #for tablegrob functions 
-#library(kableExtra) #for kable functions
 library(dplyr) #for piping 
 library(xtable) #for latex table output 
 knitr::opts_chunk$set(fig.width = 10, fig.height = 4)
 #knitr::opts_chunk$set(echo=FALSE)
 decimal <- function(x, k) trimws(format(round(x, k), nsmall=k))
+  #function to round/display specific decimals
 dec <- 3
 ```
 
-
+## Put in Raw Data  
 ```{r rawdata}
 Game <- c(1:23) #game number 
 Made <- c(4, 5, 5, 5, 2, 7, 6, 9, 
@@ -42,9 +44,11 @@ Attempt <- c(5, 11, 14, 12, 7, 10, 14, 15,
              12, 4, 27, 17, 12, 9, 12, 10, 
              12, 6, 39, 13, 17, 6 ,12) #number of free throw attempt
 Miss <- Attempt - Made #number of free throws missed 
+Prop <- Made/Attempt #proportion made
 ```
-
-```{r binarydata}
+  
+## Convert Data to Binary Data
+```{r binarydata} 
 l <- length(Game) #23
 FT <- c() #free throws vector (binary: 0 or 1)
 G <- c() #game vector 
@@ -54,75 +58,148 @@ for (i in 1:l){
     new.game <- c(rep(Game[i], length(made.i)+length(miss.i)))
     FT <- c(FT, made.i, miss.i)
     G <- c(G, new.game)}
-
-K <- c() 
-for (j in 1:l){
-  log.N.j <- log(Attempt[j])
-  new.k <- rep(log.N.j, Attempt[j])
-  K <- c(K, new.k)}
-
-df.data <- data.frame("FT"=FT, "G"=G, "K"=K)
+df.data <- data.frame("FT"=FT, "G"=G)
 ```
 
-```{r samerate, warning=FALSE}
-#test if pi_i- \alpha for each pi_i
-#use linear regression 
-lin.reg <- glm(FT ~ 1, data=df.data)
-alpha <- summary(lin.reg)$coef[1,1]
-se.alpha <- summary(lin.reg)$coef[1,2]
-z.star <- qnorm(0.975)
-CI.alpha <- cbind(alpha - z.star*se.alpha, alpha + z.star*se.alpha)
-print.CI.alpha <- paste(decimal(CI.alpha, dec), collapse=",")
+# Common Probability  
 
-#chisq test - check Goodness of Fit 
+## Estimate $\alpha$ 
+```{r reg, warning=FALSE, message=FALSE}
+reg <- glm(FT~1, family=binomial(link="identity"))
+alpha <- summary(reg)$coef[1,1] #pull out interecept estimation 
+se.alpha <- summary(reg)$coef[1,2]#pull out standard error of incetercept estimate 
+CI.alpha <- confint(reg)
+print.CI.alpha <- paste(decimal(CI.alpha, dec), collapse=",")
+```
+
+```{r alpha.table}
+name <- c("$\\hat{\\alpha}$"
+          , "Standard Error"
+          , "Confidence Interval")
+value <- c(decimal(alpha, dec), 
+           decimal(se.alpha, dec),
+           paste("(", print.CI.alpha, ")"))
+alpha.table <- data.frame("Statistic" = name, "Values" = value)
+caption.alpha.table <- c("Common Probability Model -  $\\alpha$")
+knitr::kable(alpha.table, align='lr',caption=paste(caption.alpha.table))
+```
+  
+```{r alpha.tableLatex, echo=FALSE, eval=FALSE}
+xtable.alpha.table <- xtable(phi.table, align="clr", caption=paste(caption.alpha.table))
+print(xtable.alpha.table
+      ,caption.placement="top"
+      ,sanitize.text.function = function(x){x}
+      )
+```
+
+## Global Lack of Fit - Chi-Squared Approximation 
+
+```{r chiassumptions}
+n.star <- sum(Attempt)
+dim.H0H1 <- length(Game)
+paste("Check:", n.star, "=n.star >> dim(H0 U H1)=", dim.H0H1)
+```
+  
+```{r chisq, warning=FALSE }
 table <- cbind(Made, Miss)
 chi.test <- chisq.test(table)
 X2 <- chi.test$statistic
 pval <- chi.test$p.value
+df <- chi.test$parameter 
+paste("Pearson X-sq Statistic="
+      , decimal(X2, dec)
+      , "on"
+      , df
+      , "degrees of freedom, with p-value of"
+      , decimal(pval, dec)
+      )
 
-name <- c("$\\alpha$"
+```
+
+## Local Lack of Fit - Standardized Residuals  
+
+```{r res}
+stdreschi <- chi.test$stdres[,1]#standardize residual 
+big.res <- length(stdreschi[abs(stdreschi)> 2])
+res.table <- cbind(Game, stdreschi)
+res.table <- res.table[order(-abs(stdreschi)),]
+  #put residuals in order from larges abs value to smallest abs value 
+colnames(res.table) <- c("Game", "Standardized Residuals")
+caption.res <- c("Common Probability Model: Standardized Residuals")
+res.table
+```
+
+```{r resLatex, echo=FALSE, eval=FALSE}
+xtable.res <- xtable(res.table, align="lrr", digits=c(0, 0, dec), caption=paste(caption.res))
+print(xtable.res
+      ,caption.placement="top"
+      ,sanitize.text.function = function(x){x}
+      )
+```
+
+## Game 14 - Outlier causing lack of fit? 
+```{r chisq.no14, warning=FALSE }
+table <- cbind(Made, Miss)
+table.no14 <- table[-14,]
+chi.test.no14 <- chisq.test(table.no14)
+X2.no14 <- chi.test.no14$statistic
+pval.no14 <- chi.test.no14$p.value
+df.no14 <- chi.test.no14$parameter 
+paste("Pearson X-sq Statistic="
+      , decimal(X2.no14, dec)
+      , "on"
+      , df.no14
+      , "degrees of freedom, with p-value of"
+      , decimal(pval.no14, dec)
+      )
+```
+
+```{r res.no14}
+stdreschi <- chi.test$stdres[,1]#standardize residual 
+decimal(max(abs(stdreschi)), dec) #make standardize residual in absolute vaule
+```
+
+
+# Common Probability Model with Over-disperion   
+
+## Estimate Dispersion and Scale 
+```{r phi}
+phi <- X2/ df
+paste("X2 is", decimal(X2, dec), "on", df, "df --and so phi="
+      , decimal(phi, dec), "and so sqrt(phi)=", decimal(sqrt(phi), dec))
+```
+
+## Estimate $\alpha$, assuming $\phi \neq 1$ 
+```{r reg.phi, warning=FALSE, message=FALSE}
+reg <- glm(FT~1, family=binomial(link="identity"))
+reg.phi<-  summary(reg, dispersion=phi)
+alpha.phi <- reg.phi$coef[1,1]
+alpha.se.phi <- reg.phi$coef[1,2]
+
+z.star <- qnorm(0.975)
+CI.phi <- cbind(alpha.phi - z.star*alpha.se.phi, alpha + z.star*alpha.se.phi)
+print.CI.phi <- paste(decimal(CI.phi, dec), collapse=",")
+```
+
+```{r phi.table}
+name <- c("$\\hat{\\alpha}$"
           , "Standard Error of $\\alpha$"
           , "Confidence Interval for $\\alpha$")
-value <- c(decimal(alpha, dec), 
-           decimal(se.alpha, dec),
-           paste("(", print.CI.alpha, ")"))
-samerate <- data.frame("Statistic" = name, "Values" = value)
-caption.samerate <- c("Model $\\pi_i = \\alpha$")
-knitr::kable(samerate, align='lr',caption=paste(caption.samerate))
-```
-
-```{r sametableLaTex, echo=FALSE, eval=FALSE}
-xtable.sametable <- xtable(samerate, align="llr", caption=paste(caption.samerate))
-print(xtable.sametable
-      ,caption.placement="top"
-      ,sanitize.text.function = function(x){x}
-      )
-```
-
-```{r samerate.phi, warning = FALSE}
-phi <- X2/(length(Game)-1)
-se.phi <- sqrt(phi)*se.alpha
-z.star <- qnorm(0.975)
-CI.phi <- cbind(alpha - z.star*se.phi, alpha + z.star*se.phi)
-print.CI.phi <- paste(decimal(CI.phi, dec), collapse=",")
-
-
-name <- c("Dispersion, $\\hat{\\phi}$"
-          , "Scale, $\\sqrt{\\hat{\\phi}}$"
-          , "Standard Error of $\\alpha$, Adjusted"
-          , "Confidence Interval for $\\alpha$, Adjusted")
-value <- c(decimal(phi, dec), decimal(sqrt(phi), dec), decimal(se.phi, dec),
+value <- c(decimal(alpha.phi, dec),  decimal(alpha.se.phi, dec),
            paste("(", print.CI.phi, ")"))
-samerate.phi <- data.frame("Statistic" = name, "Values" = value)
-caption.samerate.phi <- c("Model $\\pi_i = \\alpha$, Estimate of $\\phi$ and Adjustements")
-knitr::kable(samerate.phi, align="lr", caption=paste(caption.samerate.phi))
+phi.table <- data.frame("Statistic" = name, "Values" = value)
+caption.phi.table <- c("Common Probability Model assuming $\\phi \\neq 1$ - $\\alpha$")
+knitr::kable(phi.table, align="lr", caption=paste(caption.phi.table))
 ```
-
-```{r sametable.phiLaTex, echo=FALSE, eval=FALSE}
-xtable.sametable.phi <- xtable(samerate.phi, align="llr", caption=paste(caption.samerate.phi))
-print(xtable.sametable.phi
+```{r phi.tableLaTex, echo=FALSE, eval=FALSE}
+xtable.phi.table <- xtable(phi.table, align="llr", caption=paste(caption.phi.table))
+print(xtable.phi.table
       ,caption.placement="top"
       ,sanitize.text.function = function(x){x}
       )
 ```
+  
+ 
+
+
 
