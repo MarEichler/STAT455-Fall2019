@@ -11,10 +11,10 @@ header-includes:
 - \usepackage{mathtools}
 - \usepackage{bbm} #for mathbb for numbers
 - \usepackage{amsbsy}
-#- \usepackage{caption}
-#- \usepackage{booktabs}
+- \usepackage{caption}
+- \usepackage{booktabs}
 - \usepackage{geometry}
-#- \usepackage{float} #to hold things in place
+- \usepackage{float} #to hold things in place
 - \usepackage{lastpage}
 - \usepackage{fancyhdr}
 - \pagestyle{fancy}
@@ -25,8 +25,6 @@ header-includes:
 - \setlength{\headheight}{22.5pt} #to remove \fancyhead error for head height
 geometry: left=0.75in,right=0.75in,top=1.1in,bottom=1in
 ---
-Testing for Github
-
 ```{r setup, include=F}
 knitr::opts_chunk$set(echo=F, message=F, warning=F)
 
@@ -51,13 +49,17 @@ knitr::opts_chunk$set(fig.pos='H')
 
 # Estimates of Killing in Casanare
 
+$\textcolor{red}{\text{MB: 2 sentences on Casanare}}$
+
 Casanare is a large, rural  state in Colombia that includes 19 municipalities and a population of almost 300,000 inhabitants. Located in the foothills of the Andes, Casanare has a history of violence. Multiple armed groups have operated in Casanare including paramilitaries, guerillas and the Colombian military. Many Casanare citizens have suffered violent deaths and disappearances.  
+
+$\textcolor{red}{\text{AS: 2 sentences on on study/datasets}}$
 
 But *how many* people have been killed or disappeared? We review the Human Rights Data Analysis Group (HRDAG)'s reporting on this work. In this study, the authors used information about victims of killings and disappearances provided by 15 datasets. The datasets come from state agencies – including government, security, forensic and judicial bodies – and from civil society organizations. Across these 15 datasets, there are individuals that have been "captured" only by one dataset, and some that have been captured by multiple. How can we disambguiate the patterns of violence?
 
 # Multiple Systems Estimation (MSE), Capture Re-Capture 
 
-MSE estimates the total number of disappearances by comparing the size of the overlap(s) between lists to the sizes of the lists themselves. If the overlap is small, this implies that the population from which the lists were drawn is much larger than the lists. If, on the other hand, most of the cases on the lists overlap, this implies that the overall population is not much larger than the number of cases listed.
+The goal is to estimate the overall population of victims by first estimating the victims who are not captured by any of the datasets.  MSE estimates the total number of disappearances by comparing the size of the overlap(s) between lists to the sizes of the lists themselves. If the overlap is small, this implies that the population from which the lists were drawn is much larger than the lists. If, on the other hand, most of the cases on the lists overlap, this implies that the overall population is not much larger than the number of cases listed.
 
 
 ```{r img.MSE, fig.height=3, fig.cap="Multiple System Estimation"}
@@ -132,6 +134,62 @@ knitr::kable(contigency_table, format="latex", booktabs=T, caption="Contingency 
 
 ```
 
+## Overall Trends  
+
+The following graph shows that violence has been concentrated in $\textcolor{red}{\text{municipality}}$.  We can see that the *reported* violence (i.e. the counts in the 15 datasets) appears to have intensified across all municipalities in Casanare in 2003-2004 and then dropped.
+
+```{r mapping-whole-country}
+#group deaths by municipality
+muni <- casanare %>% mutate(name_2= str_to_title(muni)) %>%group_by(name_2)  %>% summarise(count = sum(Freq))
+
+colombia_dat <- getData('GADM', country='COL', level = 2) %>% 
+  st_as_sf() %>% 
+  clean_names()
+
+casanare_dat <-  colombia_dat %>% 
+  filter(name_1 == "Casanare") %>%  
+  mutate(name_2 =  stringi::stri_trans_general(name_2, "Latin-ASCII"))%>% #removes accents for joining purposes
+  mutate(name_2 = str_to_title(name_2)) %>%
+  left_join( muni, by =c('name_2')) 
+ 
+casanare_overall_plot <- ggplot(casanare_dat, aes(fill = count)) +scale_fill_gradient(low='white', high= 'red')+ 
+  geom_sf() +
+  theme_void() + 
+  ggtitle('Total Counts in 15 Datasets by Municipality 1998-2007')
+    
+```
+
+```{r mapping-by-muni}
+#partition by years
+#group deaths by municipality
+muni_by_year<- casanare %>% mutate(name_2 = str_to_title(muni)) %>%
+  group_by(name_2, year)  %>% 
+  summarise(count = sum(Freq))
+
+casanare_dat_with_years <-  colombia_dat %>% 
+  filter(name_1 == "Casanare") %>%  
+  mutate(name_2 =  stringi::stri_trans_general(name_2, "Latin-ASCII"))%>%
+  mutate(name_2 = str_to_title(name_2)) %>%
+  left_join( muni_by_year, by =c('name_2')) 
+
+
+ 
+casanare_by_years <- ggplot(casanare_dat_with_years, aes(fill = count)) +scale_fill_gradient(low='white', high= 'red')+ 
+  geom_sf() +
+  theme_void() + facet_wrap( ~ year)+
+  ggtitle('Yearly Counts in 15 Datasets by Municipality 1998-2007')
+```
+
+```{r gisplots, fig.cap="Overall Trends in 15 Datasets by Municipality"}
+gridExtra::grid.arrange(casanare_overall_plot, casanare_by_years, nrow=1)
+```
+
+
+However, just looking at the trends amoung the totals of the 15 datasets does not give the whole picture.  
+
+### Heterogenity Issues
+$\textcolor{red}{\text{AS: looking at certain year and show total, and lista, listb, listc to show diff probs}}$
+
 ## Different Datasets - Different Stories 
 
 We motivate our need for a more sophisticated analysis by showing the reporting patterns of 3 different organizations across 1998-2007. If we relied on just one organization or even a combination of two we could tell differnt stories regarding the violence. Relying on FAM shows a peak in violent incidents in 2003, while reports by IMLM show a peak in 2004 . Using multiple systems estimation allows us to parse both the reported and unreported violent in Casanare.
@@ -155,76 +213,11 @@ motivation.plot <- ggplot(casanare_wide, aes(x= factor(year), y= as.integer(n), 
 motivation.plot 
 ```
 
-## Counts by Municipality 
-
-### Heterogenity  
-From the bottom graph of our heterogenity graph, we see differences in the capture probabilities across lists. 
-
-$\textcolor{red}{\text{NEED MORE DESCRIPTION}}$  
-  
-- this all the lists for all years??
-- need more info on this graph  
-- are the lists focused in geographically areas? if not I don't see how this affects capture probabilities 
-
-```{r mapping-whole-country, fig.cap="Total counts by Municipality 1998-2007"}
-#group deaths by municipality
-muni <- casanare %>% mutate(name_2= str_to_title(muni)) %>%group_by(name_2)  %>% summarise(count = sum(Freq))
-
-colombia_dat <- getData('GADM', country='COL', level = 2) %>% 
-  st_as_sf() %>% 
-  clean_names()
-
-casanare_dat <-  colombia_dat %>% 
-  filter(name_1 == "Casanare") %>%  
-  mutate(name_2 =  stringi::stri_trans_general(name_2, "Latin-ASCII"))%>% #removes accents for joining purposes
-  mutate(name_2 = str_to_title(name_2)) %>%
-  left_join( muni, by =c('name_2')) 
- 
-casanare_overall_plot <- ggplot(casanare_dat, aes(fill = count)) +scale_fill_gradient(low='white', high= 'red')+ 
-  geom_sf() +
-  theme_void()
-
-casanare_overall_plot
-    
-```
-
-### Total Reported Victims Trends  
-
-We can see that the *reported* violence appears to have intensified across all municipalities in Casanare in 2003-2004 and then dropped.
-
-$\textcolor{red}{\text{NEED MORE DESCRIPTION}}$
-  
-- is this one list? 
-- all the lists together 
-
-```{r mapping-by-muni, fig.cap= 'Yearly Counts by Municipality 1998-2007'}
-#partition by years
-#group deaths by municipality
-muni_by_year<- casanare %>% mutate(name_2 = str_to_title(muni)) %>%
-  group_by(name_2, year)  %>% 
-  summarise(count = sum(Freq))
-
-casanare_dat_with_years <-  colombia_dat %>% 
-  filter(name_1 == "Casanare") %>%  
-  mutate(name_2 =  stringi::stri_trans_general(name_2, "Latin-ASCII"))%>%
-  mutate(name_2 = str_to_title(name_2)) %>%
-  left_join( muni_by_year, by =c('name_2')) 
-
-
- 
-casanare_by_years <- ggplot(casanare_dat_with_years, aes(fill = count)) +scale_fill_gradient(low='white', high= 'red')+ 
-  geom_sf() +
-  theme_void() + facet_wrap( ~ year)
-
-casanare_by_years
-```
-
- 
 
 
 # Loglinear Modelling 
 
-We will describe the model as if we had two datasets (for simplicity).  We know the victims "captured" by only dataset 1, only dataset 2, and both datasets.  However, we don't know the amount of victims that are not captured by either list.  Estimate this value allows us to estimate the total count of victims.  
+In order to do our estimation, we will use loglinear modeling.  We will describe the model as if we had two datasets (for simplicity).  We know the victims "captured" by only dataset 1, only dataset 2, and both datasets.  However, we don't know the amount of victims that are not captured by either list.  Estimate this value allows us to estimate the total count of victims.  
 
 ```{r img.example, fig.height=3,echo=FALSE}
 library(png)
@@ -324,6 +317,8 @@ for_venn <- cap_indicators[,c(16:20)] %>%
 par(mar=c(.1,1,2,1)) #make margins smaller
 dga::venn4(c(2000,for_venn$new_Freq),num.test.points = 100000, main='Overlap of Security, Forensic, Judicial and Civil lists') #rough diagram of overlap
 ```
+In the above Venn Diagram, the colored dots represent a specific victim.  We are trying to estimate the victims that are not caputred in one of th lists (shown by the graph dots).  We can see there is not a lot of overlap, which suggests there may be lack of heterogenity capture probability (i.e. the probability of a victim captured differs from list to list).  In addition, this implies that there is likely a much larger population of victims than counted in the 15 datasets.  
+
 
 ## Model Definitions  
 
@@ -336,9 +331,9 @@ Models will be donoted by $M$, and the subscripts will denote the type of model.
 * $M_h$: This model relaxes the $M_0$ model to allow for individual capture heterogeneity.
 * $M_{th}$: This model allows for both list heterogeneity and capture events having different rates.
 
-### Types of Heterogeniety 
+### Types of Heterogeniety  
 
-When heterogeneity is present, there are different forms that this heterogeneity can take. 
+When heterogeneity in capture probability is present (i.e. the probability of a list capturing a victims differs), there are different forms that this heterogeneity can take. 
 
 * Normal: The log odds of capture follows a Normal distribution.
 * Darroch: The log odds of capture among those who were not captured follows a Normal distribution.
@@ -352,7 +347,7 @@ After collapsing the 15 lists into four systems, we fit several loglinear models
 
 We will need the hierchachal structure to perform model selection. It’s important to note that a model is not chosen if it bears no resemblance to the observed data.  The choice of a preferred model is typically based on a formal comparison of goodness-of-fit statistics associated with models that are related hierarchically (models containing higher order terms also implicitly include all lower order terms).  Ultimately, the preferred model should distinguish between the pattern of the variables in the data and sampling variability, thus providing an intuitive interpretation.  
 
-The “number of captured units” is the number of observed elements, in this example, the number of people documented as missing/killed, we usually call this $N_c$ ($N$ for overall total, and $c$ denoting caputred. The “abundance” column shows the estimate of $\hat{N}$, the total population including the observed and the estimated unobserved deaths. The AIC and BIC columns show the “information coefficients” which balance the goodness of fit (shown in the “deviance” column) with the information used to estimate the model (degrees of freedom indicate this).
+The “number of captured units” is the number of observed elements, in this example, the number of people documented as missing/killed, we usually call this $N_c$ ($N$ for overall total, and $c$ denoting caputred. The “abundance” column shows the estimate of $\hat{N}$, the total population including the observed and the estimated unobserved deaths. The AIC and BIC columns show the “information coefficients” which balance the goodness of fit (shown in the “deviance” column) with the information used to estimate the model (degrees of freedom indicate this).  Model selection often occurs based on the smallest AIC and BIC values, however this can only be done with hierchical models which is not the case here.  
 
 ```{r NOT-HIERCH-models}
 test <- cap_indicators[,c(16:20)] %>% 
@@ -380,6 +375,8 @@ Each model controls for a subset of all the possible interactions among the mode
 par(mar=c(2,1,2,1)) #make margins smaller
 boxplot(loglinear_models) #residuals for heterogen.
 ```
+These boxplots of residuals offer a general assesment of model fit.  The light dotted line represents zero, and ideally you want the residuals centered around zero.  We see that there is significantly less variation in the $M_{th}$ Models.  These models account for list heterogenity (probability of capture for a specific victim varies from list to list) and individual heterogenity (probability of capture for a specific list varies from victim to victim).  Models that account for heterogenity offer less variation but also do not have residuals centered at zero.  
+
 
 ## Specific Model Results 
 
@@ -400,6 +397,7 @@ We display some basic capture-recapture frequency statistics to explore capture 
 
 ```{r descriptive-stats, fig.height=8, fig.cap="Capture-Recapture Frequency Statistics"}
 desc<- descriptive(test, dfreq = T)
+desc
 plot(desc)
 ```
 
@@ -407,18 +405,22 @@ $$\log\left(\frac{f_i}{{t \choose i}}\right) = \log \left(\frac{N \times P(i \te
 
 
 
-## THIS SECTION NEEDS A HOME 
+
+
+## Hierarchical Models: Choosing a Model  
 
 The iterative proportional fitting process generates maximum likelihood estimates of the expected cell frequencies for a hierarchical model.  In short, preliminary estimates of the expected cell frequencies are successfully adjusted to fit each of the marginal sub-tables specified in the model.
 
-For example, in the model $list_1$, $list_{12}$, $list_{123}$, the initial estimates are adjusted to fit $list_{12}$ then $list_{23}$ and finally to equal the $list_{123}$, observed frequencies.  The previous adjustments become distorted with each new fit, so the process starts over again with the most recent cell estimate.  This process continues until an arbitrarily small difference exists between the current and previous estimates.  
 
-## Hierarchical Models: Choosing a Model 
+$\textcolor{red}{\text{AS: wants to rewrite}}$  
+For example, in the model $list_1$, $list_{12}$, $list_{123}$, the initial estimates are adjusted to fit $list_{12}$ then $list_{23}$ and finally to equal the $list_{123}$, observed frequencies.  The previous adjustments become distorted with each new fit, so the process starts over again with the most recent cell estimate.  This process continues until an arbitrarily small difference exists between the current and previous estimates.  
 
 We fit hierchachal models, restricting to second-order (no three-way interactions) for sake of interpretation.The best model according to the BIC criteria, is below: estimates a total for missing/disappeared people as $8607$, which is similar to the  $8782$ than that of the non-hierch., interactionless, model. 
 
 $\textcolor{red}{\text{NEED MORE DESCRIPTION HERE}}$ 
 
+
+$\textcolor{red}{\text{want to simplify the equation??}}$  
 $$\log(\hat{N}) = \mu + \lambda_1 + \lambda_2 + \lambda_3 + \lambda_4 + \lambda_{12} + \lambda_{13} + \lambda_{24} + \lambda_{34}$$
 
 ```{r hierch-models}
@@ -438,12 +440,6 @@ knitr::kable(HierchModels, format="latex"
 
 ```
 
-
-
-
-
-
-
 We also plot the BIC values for different models and their accompanying estimates of $\hat{N}$.  
 
 Note that these the hierch. models have different estimates ,ranging from 5231 to 8607, all within very similar BIC values  Which one should we use?
@@ -456,8 +452,16 @@ This is the fundamental problem of the frequentist approach. We could just pick 
 
 # Goodness of Fit
 
+$\textcolor{red}{\text{AS}}$  
+
 I will describe here how likelihood ratio test is better for model comparison than Pearson's Chi-square??
 
 
 
-# Conclusions
+# Conclusions  
+
+$\textcolor{red}{\text{MB}}$ 
+
+* total under 15 datasets 3000 (? check this number )
+* Lots of uncertaintiy (not even sure our data meets requirements for modeling)
+* "valid" estimates can range from 5000 - 9000 (could be used for different political stories)
