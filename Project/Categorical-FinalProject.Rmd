@@ -5,6 +5,7 @@ date: "2019-12-05"
 output:
   pdf_document:
     fig_caption: yes
+    keep_tex: yes
     number_sections: yes
 header-includes: 
 - \usepackage{color}
@@ -185,7 +186,7 @@ gridExtra::grid.arrange(casanare_overall_plot, casanare_by_years, nrow=1)
 ```
 
 
-However, just looking at the trends amoung the totals of the 15 datasets does not give the whole picture.  
+Looking just at the the totals of the 15 datasets and individual may think that the violence peaked in 2003-2004 and the total of victims is $\textcolor{red}{\text{3000?}}$ However, just looking at the trends amoung the totals of the 15 datasets does not give the whole picture.  
 
 ### Heterogenity Issues
 $\textcolor{red}{\text{AS: looking at certain year and show total, and lista, listb, listc to show diff probs}}$
@@ -307,7 +308,6 @@ table.system <- head(cap_indicators %>% dplyr::select(security_ind, forensic_ind
 knitr::kable(table.system, format="latex", booktabs=T, caption="Example of Information from Systems") %>% 
   #kableExtra::kable_styling(latex_options="scale_down") %>% for if the table is too large
   kableExtra::kable_styling(latex_options = "HOLD_position")
-
 ```
 
 ```{r systems.venndiagram, fig.height=6, fig.cap="Estimated Venn Diagram of Systems"}
@@ -317,6 +317,8 @@ for_venn <- cap_indicators[,c(16:20)] %>%
 par(mar=c(.1,1,2,1)) #make margins smaller
 dga::venn4(c(2000,for_venn$new_Freq),num.test.points = 100000, main='Overlap of Security, Forensic, Judicial and Civil lists') #rough diagram of overlap
 ```
+  
+  
 In the above Venn Diagram, the colored dots represent a specific victim.  We are trying to estimate the victims that are not caputred in one of th lists (shown by the graph dots).  We can see there is not a lot of overlap, which suggests there may be lack of heterogenity capture probability (i.e. the probability of a victim captured differs from list to list).  In addition, this implies that there is likely a much larger population of victims than counted in the 15 datasets.  
 
 
@@ -363,18 +365,19 @@ knitr::kable(NonHierchModels
              , format="latex"
              , booktabs=T
              , caption="Summary of Models (Non-hierarchical models)") %>% 
-  kableExtra::kable_styling(latex_options="scale_down") %>%
+  #kableExtra::kable_styling(latex_options="scale_down") %>%
   kableExtra::kable_styling(latex_options = "HOLD_position")
 
 ```
 
 Each model controls for a subset of all the possible interactions among the models. In the context of MSE, the two- and three-way interactions estimate (and to some extent, control for) associations in the probabilities of capture between (and among) the lists. For example, is a certain person more likely to be seen on one list, and also more likely to be seen on a second list? If associations like this are present (and they usually are), they can bias the estimate.
 
-
 ```{r NOT-HIERCH-models-boxplot, fig.cap="Boxplot of Residuals for Models"}
 par(mar=c(2,1,2,1)) #make margins smaller
 boxplot(loglinear_models) #residuals for heterogen.
 ```
+   
+  
 These boxplots of residuals offer a general assesment of model fit.  The light dotted line represents zero, and ideally you want the residuals centered around zero.  We see that there is significantly less variation in the $M_{th}$ Models.  These models account for list heterogenity (probability of capture for a specific victim varies from list to list) and individual heterogenity (probability of capture for a specific list varies from victim to victim).  Models that account for heterogenity offer less variation but also do not have residuals centered at zero.  
 
 
@@ -395,7 +398,7 @@ knitr::kable(round(profilelike$results, 2), format="latex", booktabs=T, caption=
 
 We display some basic capture-recapture frequency statistics to explore capture patterns. It displays, for $i= 1,...t$, the number of people captured $i$ times ($f_i$), the number of people captured for the first time on occasion $i$ ($u_i$), the number of units capturedfor the last time on occasion $i$ ($v_i$) and the number of units captured on occasion $i$ ($n_i$). If the $n_i$ statistics vary among capture occasions, there is a temporal effect-- which we clearly see here. We would expect the top panel of the plot to be linear, while the bottom panel should be concave down or exhibit no pattern for capture patterns that are best fit with $M_{th}$ models. 
 
-```{r descriptive-stats, fig.height=8, fig.cap="Capture-Recapture Frequency Statistics"}
+```{r descriptive-stats, fig.height=5.6, fig.cap="Capture-Recapture Frequency Statistics"}
 desc<- descriptive(test, dfreq = T)
 desc
 plot(desc)
@@ -417,27 +420,37 @@ For example, in the model $list_1$, $list_{12}$, $list_{123}$, the initial estim
 
 We fit hierchachal models, restricting to second-order (no three-way interactions) for sake of interpretation.The best model according to the BIC criteria, is below: estimates a total for missing/disappeared people as $8607$, which is similar to the  $8782$ than that of the non-hierch., interactionless, model. 
 
-$\textcolor{red}{\text{NEED MORE DESCRIPTION HERE}}$ 
+The below describes three possible models.  The $\log(\hat{N})$ is based on the grand mean $\mu$ and effects based on our 4 systems (which are represented by $\lambda$).  The subscripts of $\lambda$ denote whether the effect is coming from a single system or the overlap between two systems (note we did not look at models that more than two-way interactions).  
 
-
-$\textcolor{red}{\text{want to simplify the equation??}}$  
-$$\log(\hat{N}) = \mu + \lambda_1 + \lambda_2 + \lambda_3 + \lambda_4 + \lambda_{12} + \lambda_{13} + \lambda_{24} + \lambda_{34}$$
+$$
+\begin{aligned}
+\text{Top Model:}\quad & \log(\hat{N}) = \mu + \lambda_{12} + \lambda_{13} + \lambda_{14} + \lambda_{23} + \lambda_{24} + \lambda_{34}
+\\
+\text{Example of Middle Model:}\quad & \log(\hat{N}) = \mu +  \lambda_{13} + \lambda_{14} + \lambda_{24}
+\\
+\text{Bottom Model:}\quad & \log(\hat{N}) = \mu + \lambda_1 + \lambda_2 + \lambda_3 + \lambda_4 
+\end{aligned} 
+$$
 
 ```{r hierch-models}
 ##HERE: why is hierch. structure better? 
 hierch_models <- closedpMS.t(test, dfreq=T ,h='Poisson', maxorder = 2) #restrict to second order interactions 
 
-HierchModels <- hierch_models$results[1:10,]
+r <- dim(hierch_models$results)[1]
+
+Top <- hierch_models$results[1:5,]
+Middle <- hierch_models$results[30:34,]
+Bottom <- hierch_models$results[60:64,]
+HierchModels <- rbind(Top, Middle, Bottom) 
 rnames <- rownames(HierchModels) 
 rownames(HierchModels)<- gsub("\\[|\\]", "", rnames)
 #get rid fo brackets otherwise booktabs goes all wonky
 
 knitr::kable(HierchModels, format="latex"
              , booktabs=T
-             , caption="'Top' Ten Five Models (Hierarchical models)") %>% 
+             , caption="'Top' Five, 'Middle' Five, and 'Bottom' Five Models (Hierarchical models)") %>% 
   kableExtra::kable_styling(latex_options="scale_down") %>%
   kableExtra::kable_styling(latex_options = "HOLD_position")
-
 ```
 
 We also plot the BIC values for different models and their accompanying estimates of $\hat{N}$.  
