@@ -5,7 +5,6 @@ date: "2019-12-05"
 output:
   pdf_document:
     fig_caption: yes
-    keep_tex: yes
     number_sections: yes
 header-includes: 
 - \usepackage{color}
@@ -38,6 +37,7 @@ require(raster)
 require(Rcapture)
 require(dga)
 require(rgeos)
+require(MASS)
 library(bookdown) #for fig captions
 library(kableExtra)
 
@@ -54,9 +54,10 @@ $\textcolor{red}{\text{MB: 2 sentences on Casanare}}$
 
 Casanare is a large, rural  state in Colombia that includes 19 municipalities and a population of almost 300,000 inhabitants. Located in the foothills of the Andes, Casanare has a history of violence. Multiple armed groups have operated in Casanare including paramilitaries, guerillas and the Colombian military. Many Casanare citizens have suffered violent deaths and disappearances.  
 
-$\textcolor{red}{\text{AS: 2 sentences on on study/datasets}}$
 
-But *how many* people have been killed or disappeared? We review the Human Rights Data Analysis Group (HRDAG)'s reporting on this work. In this study, the authors used information about victims of killings and disappearances provided by 15 datasets. The datasets come from state agencies – including government, security, forensic and judicial bodies – and from civil society organizations. Across these 15 datasets, there are individuals that have been "captured" only by one dataset, and some that have been captured by multiple. How can we disambguiate the patterns of violence?
+But *how many* people have been killed or disappeared? We review the Human Rights Data Analysis Group (HRDAG)'s reporting on this work. In this study, the authors used information about victims of killings and disappearances provided by 15 datasets .Any accounting of lethal violence will be incorrect if we assume that any one dataset or combination of datasets contains a comprehensive count of violent acts and disappearances. Registries of violent acts kept by governmental and non-governmental institutions contain some, but not all, of the records of lethal violence. Organizations collecting this data may only have access to certain subsets of a population or geographic areas. 
+
+The datasets come from state agencies – including government, security, forensic and judicial bodies – and from civil society organizations. Across these 15 datasets, there are individuals that have been "captured" only by one dataset, and some that have been captured by multiple. How can we disambguiate the patterns of violence?
 
 # Multiple Systems Estimation (MSE), Capture Re-Capture 
 
@@ -186,10 +187,26 @@ gridExtra::grid.arrange(casanare_overall_plot, casanare_by_years, nrow=1)
 ```
 
 
-Looking just at the the totals of the 15 datasets and individual may think that the violence peaked in 2003-2004 and the total of victims is $\textcolor{red}{\text{3000?}}$ However, just looking at the trends amoung the totals of the 15 datasets does not give the whole picture.  
+However, just looking at the trends amoung the totals of the 15 datasets does not give the whole picture.  
 
 ### Heterogenity Issues
-$\textcolor{red}{\text{AS: looking at certain year and show total, and lista, listb, listc to show diff probs}}$
+
+```{r}
+gather_cols <-colnames(casanare %>% dplyr::select(starts_with("d_")))
+for_2004<- pivot_longer(casanare, cols= gather_cols, names_to='data_lists', values_to='indicator') %>% filter(indicator == 1) %>%
+  filter(data_lists == "d_PN0" | data_lists == "d_IMLM" |  data_lists == "d_CIN")  %>% filter(year == 2004) %>%
+  mutate(name_2 = str_to_title(muni)) 
+
+test_this <- colombia_dat %>% filter(name_1 == "Casanare") %>%  
+  mutate(name_2 =  stringi::stri_trans_general(name_2, "Latin-ASCII"))%>%
+  mutate(name_2 = str_to_title(name_2)) %>%
+  full_join(for_2004, by =c('name_2'))
+
+ggplot(test_this, aes(fill= Freq)) + scale_fill_gradient(low='white', high= 'red')+ 
+  geom_sf() +
+  theme_void() + facet_wrap( ~ data_lists)+ ggtitle('Dissapearances/Kidnappings Across Municipalities by Different Organizations, in 2004')
+
+```
 
 ## Different Datasets - Different Stories 
 
@@ -197,13 +214,13 @@ We motivate our need for a more sophisticated analysis by showing the reporting 
 
 ```{r motivation-plot}
 #list by year
-gather_cols <-colnames(casanare %>% dplyr::select(starts_with("d_")))
-casanare_wide <-  gather(casanare, key = "data_lists", value= 'Freq', gather_cols) %>% 
+
+casanare_long <-  gather(casanare, key = "data_lists", value= 'Freq', gather_cols) %>% 
   filter(data_lists == "d_GAU" | data_lists == "d_IMLM" |  data_lists == "d_FAM") %>%
   group_by(data_lists,year) %>% summarise(n = sum(Freq))
                                                                                       
 
-motivation.plot <- ggplot(casanare_wide, aes(x= factor(year), y= as.integer(n), fill = as.factor(data_lists)))+
+motivation.plot <- ggplot(casanare_long, aes(x= factor(year), y= as.integer(n), fill = as.factor(data_lists)))+
   geom_bar(stat='identity', position='dodge') + xlab("Year") + ylab("Reported Disappearances/Deaths") +
   ggtitle('Reported Disappearances/Deaths in Casanare') +
   guides(fill = guide_legend(title='Lists'))  + 
@@ -223,8 +240,8 @@ In order to do our estimation, we will use loglinear modeling.  We will describe
 ```{r img.example, fig.height=3,echo=FALSE}
 library(png)
 library(grid)
-img <- readPNG("2datasetexample.png")
- grid.raster(img)
+#img <- readPNG("2datasetexample.png")
+# grid.raster(img)
 ```
 
 The count of victims captured into a dataset or combindation of datasets is $n_{11}, n_{10}, n_{01}$, and $n_{00}$.  Each of these cells is a count of victims captured. The subscripts denote which datasets a victim has been captured.  The subscripts denotes if the victim has been captured (1), or not been captured by a certain data set.  For $n_{ij}$, $i$ is for dataset #1 and $j$ is dataset #2.  
@@ -308,6 +325,7 @@ table.system <- head(cap_indicators %>% dplyr::select(security_ind, forensic_ind
 knitr::kable(table.system, format="latex", booktabs=T, caption="Example of Information from Systems") %>% 
   #kableExtra::kable_styling(latex_options="scale_down") %>% for if the table is too large
   kableExtra::kable_styling(latex_options = "HOLD_position")
+
 ```
 
 ```{r systems.venndiagram, fig.height=6, fig.cap="Estimated Venn Diagram of Systems"}
@@ -317,8 +335,6 @@ for_venn <- cap_indicators[,c(16:20)] %>%
 par(mar=c(.1,1,2,1)) #make margins smaller
 dga::venn4(c(2000,for_venn$new_Freq),num.test.points = 100000, main='Overlap of Security, Forensic, Judicial and Civil lists') #rough diagram of overlap
 ```
-  
-  
 In the above Venn Diagram, the colored dots represent a specific victim.  We are trying to estimate the victims that are not caputred in one of th lists (shown by the graph dots).  We can see there is not a lot of overlap, which suggests there may be lack of heterogenity capture probability (i.e. the probability of a victim captured differs from list to list).  In addition, this implies that there is likely a much larger population of victims than counted in the 15 datasets.  
 
 
@@ -365,19 +381,18 @@ knitr::kable(NonHierchModels
              , format="latex"
              , booktabs=T
              , caption="Summary of Models (Non-hierarchical models)") %>% 
-  #kableExtra::kable_styling(latex_options="scale_down") %>%
+  kableExtra::kable_styling(latex_options="scale_down") %>%
   kableExtra::kable_styling(latex_options = "HOLD_position")
 
 ```
 
 Each model controls for a subset of all the possible interactions among the models. In the context of MSE, the two- and three-way interactions estimate (and to some extent, control for) associations in the probabilities of capture between (and among) the lists. For example, is a certain person more likely to be seen on one list, and also more likely to be seen on a second list? If associations like this are present (and they usually are), they can bias the estimate.
 
+
 ```{r NOT-HIERCH-models-boxplot, fig.cap="Boxplot of Residuals for Models"}
 par(mar=c(2,1,2,1)) #make margins smaller
 boxplot(loglinear_models) #residuals for heterogen.
 ```
-   
-  
 These boxplots of residuals offer a general assesment of model fit.  The light dotted line represents zero, and ideally you want the residuals centered around zero.  We see that there is significantly less variation in the $M_{th}$ Models.  These models account for list heterogenity (probability of capture for a specific victim varies from list to list) and individual heterogenity (probability of capture for a specific list varies from victim to victim).  Models that account for heterogenity offer less variation but also do not have residuals centered at zero.  
 
 
@@ -396,9 +411,11 @@ knitr::kable(round(profilelike$results, 2), format="latex", booktabs=T, caption=
 
 ## Capture Recapture
 
-We display some basic capture-recapture frequency statistics to explore capture patterns. It displays, for $i= 1,...t$, the number of people captured $i$ times ($f_i$), the number of people captured for the first time on occasion $i$ ($u_i$), the number of units capturedfor the last time on occasion $i$ ($v_i$) and the number of units captured on occasion $i$ ($n_i$). If the $n_i$ statistics vary among capture occasions, there is a temporal effect-- which we clearly see here. We would expect the top panel of the plot to be linear, while the bottom panel should be concave down or exhibit no pattern for capture patterns that are best fit with $M_{th}$ models. 
+We display some basic capture-recapture frequency statistics to explore capture patterns. It displays, for $i= 1,...t$, the number of people captured $i$ times ($f_i$), the number of people captured for the first time on occasion $i$ ($u_i$), the number of units captured for the last time on occasion $i$ ($v_i$) and the number of units captured on occasion $i$ ($n_i$). Here "occasion" should be interpreted as one of the four "systems"-- where security is the 1st system, forensic is the 2nd, judicial is the 3rd, and civil is the 4th "occasion". 
 
-```{r descriptive-stats, fig.height=5.6, fig.cap="Capture-Recapture Frequency Statistics"}
+If the $n_i$ statistics vary among capture occasions, there is a temporal effect-- which we clearly see here. We would expect the top panel of the plot to be linear, while the bottom panel should be concave down or exhibit no pattern for capture patterns that are best fit with $M_{th}$ models. 
+
+```{r descriptive-stats, fig.height=8, fig.cap="Capture-Recapture Frequency Statistics"}
 desc<- descriptive(test, dfreq = T)
 desc
 plot(desc)
@@ -412,45 +429,77 @@ $$\log\left(\frac{f_i}{{t \choose i}}\right) = \log \left(\frac{N \times P(i \te
 
 ## Hierarchical Models: Choosing a Model  
 
-The iterative proportional fitting process generates maximum likelihood estimates of the expected cell frequencies for a hierarchical model.  In short, preliminary estimates of the expected cell frequencies are successfully adjusted to fit each of the marginal sub-tables specified in the model.
+
+We start by fitting three simple models. 
+
+The first, and simplest, is the model that assumes independence between the four systems, i.e.:
+
+$$\log(\hat{N}) = \alpha + \lambda_1 + \lambda_2 + \lambda_3 + \lambda_4$$
+
+We also fit a log linear model without three-way interactions, and one witout any four-way interactions. We perform log-likelihood ratio test and see that the higher the order of the interaction, the better the fit. 
+
+Note that these obey the **hierarchy principle**: If the $k$-way interaction is in the model then every lower order interaction and main effect is also in the model. 
+
+```{r hierch_models1}
+
+independence_model <- loglm(new_Freq ~ security_ind + forensic_ind + judicial_ind + civil_ind, data=test)
+
+no_three <- loglm(new_Freq ~ security_ind*forensic_ind + security_ind*judicial_ind + security_ind*civil_ind + forensic_ind*judicial_ind + forensic_ind*civil_ind + judicial_ind*civil_ind, data=test)
+
+no_four_way <- loglm(new_Freq ~ security_ind*forensic_ind*judicial_ind*civil_ind - security_ind:forensic_ind:judicial_ind:civil_ind, data=test)
+
+anova(independence_model, no_three, no_four_way, test="LR") #LRT 
+```
 
 
-$\textcolor{red}{\text{AS: wants to rewrite}}$  
-For example, in the model $list_1$, $list_{12}$, $list_{123}$, the initial estimates are adjusted to fit $list_{12}$ then $list_{23}$ and finally to equal the $list_{123}$, observed frequencies.  The previous adjustments become distorted with each new fit, so the process starts over again with the most recent cell estimate.  This process continues until an arbitrarily small difference exists between the current and previous estimates.  
+Using IPF, we fit all possible two-way hierch. models.(We restricting to second-order [no three-way interactions] for sake of interpretation.)
 
-We fit hierchachal models, restricting to second-order (no three-way interactions) for sake of interpretation.The best model according to the BIC criteria, is below: estimates a total for missing/disappeared people as $8607$, which is similar to the  $8782$ than that of the non-hierch., interactionless, model. 
+### How IPF works
 
-The below describes three possible models.  The $\log(\hat{N})$ is based on the grand mean $\mu$ and effects based on our 4 systems (which are represented by $\lambda$).  The subscripts of $\lambda$ denote whether the effect is coming from a single system or the overlap between two systems (note we did not look at models that more than two-way interactions).  
+The iterative proportional fitting process generates maximum likelihood estimates of the expected cell frequencies for a hierarchical model.  In short, preliminary estimates of the expected cell frequencies are successfully adjusted to fit each of the marginal sub-tables specified in the model.The unadjusted data cells may be referred to as the ‘seed’ cells, and the selected totals may be referred to as the ‘marginal’ totals
 
-$$
-\begin{aligned}
-\text{Top Model:}\quad & \log(\hat{N}) = \mu + \lambda_{12} + \lambda_{13} + \lambda_{14} + \lambda_{23} + \lambda_{24} + \lambda_{34}
-\\
-\text{Example of Middle Model:}\quad & \log(\hat{N}) = \mu +  \lambda_{13} + \lambda_{14} + \lambda_{24}
-\\
-\text{Bottom Model:}\quad & \log(\hat{N}) = \mu + \lambda_1 + \lambda_2 + \lambda_3 + \lambda_4 
-\end{aligned} 
-$$
+Here the marginal subtables would be:
 
-```{r hierch-models}
-##HERE: why is hierch. structure better? 
+* Security by Judicial by Forensic systems
+
+* Security by Forensic by Civil systems
+
+* Judicial by Forensic by Civil systems
+
+* Judicial by Civil by by Security  systems
+
+
+To do this four-dimensional IPF:
+
+Step 1: Proportionally adjust each (three-dimensional) row of cells to equal the pre-determined totals of Marginal 1.
+Step 2: Proportionally adjust each column of cells to equal the pre-determined totals of Marginal 2.
+Step 3: Proportionally adjust each slice of cells to equal the pre-determined totals of Marginal 3.
+Step 4: Proportionally adjust each stack of cells to equal the pre-determined totals of Marginal 4. This is the end of the first ‘Iteration’.
+Steps 5 and higher: Repeat the above steps until the desired level of convergence is reached.
+
+
+We choose he best model according to the BIC criteria, is below: estimates a total for missing/disappeared people as $8817$, which is similar to the  $8782$ than that of the non-hierch., interactionless, model ($M_{th}$). 
+
+
+$\textcolor{red}{\text{want to simplify the equation??}}$  
+$$\log(\hat{N}) = \alpha + \lambda_1 + \lambda_2 + \lambda_3 + \lambda_4 + \lambda_{12} + \lambda_{13} + \lambda_{24} + \lambda_{34}$$
+
+
+```{r hierch-models2}
+
 hierch_models <- closedpMS.t(test, dfreq=T ,h='Poisson', maxorder = 2) #restrict to second order interactions 
 
-r <- dim(hierch_models$results)[1]
-
-Top <- hierch_models$results[1:5,]
-Middle <- hierch_models$results[30:34,]
-Bottom <- hierch_models$results[60:64,]
-HierchModels <- rbind(Top, Middle, Bottom) 
+HierchModels <- hierch_models$results[1:10,]
 rnames <- rownames(HierchModels) 
 rownames(HierchModels)<- gsub("\\[|\\]", "", rnames)
 #get rid fo brackets otherwise booktabs goes all wonky
 
 knitr::kable(HierchModels, format="latex"
              , booktabs=T
-             , caption="'Top' Five, 'Middle' Five, and 'Bottom' Five Models (Hierarchical models)") %>% 
+             , caption="'Top' Ten Five Models (Hierarchical models)") %>% 
   kableExtra::kable_styling(latex_options="scale_down") %>%
   kableExtra::kable_styling(latex_options = "HOLD_position")
+
 ```
 
 We also plot the BIC values for different models and their accompanying estimates of $\hat{N}$.  
@@ -461,14 +510,9 @@ Note that these the hierch. models have different estimates ,ranging from 5231 t
 plot(hierch_models) #BIC for a bunch of different models 
 ```
 
-This is the fundamental problem of the frequentist approach. We could just pick the “best” model, i.e., the one with the lowest BIC. Unfortunately, just picking one model ignores the error that we introduce by the selection itself. It also forces us to decide which dependencies among the systems we will control for, forcing us to decide which dependencies will not be included in the model.
+This is the fundamental problem of the frequentist approach. We could just pick the “best” model, i.e., the one with the lowest BIC (note the y-axis is inverted).
 
-# Goodness of Fit
-
-$\textcolor{red}{\text{AS}}$  
-
-I will describe here how likelihood ratio test is better for model comparison than Pearson's Chi-square??
-
+Unfortunately, just picking one model ignores the error that we introduce by the selection itself. It also forces us to decide which dependencies among the systems we will control for, forcing us to decide which dependencies will not be included in the model.
 
 
 # Conclusions  
