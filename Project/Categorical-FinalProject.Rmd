@@ -246,8 +246,8 @@ In order to do our estimation, we will use loglinear modeling.  We will describe
 ```{r img.example, fig.height=3,echo=FALSE}
 library(png)
 library(grid)
-#img <- readPNG("2datasetexample.png")
- #grid.raster(img)
+img <- readPNG("2datasetexample.png")
+ grid.raster(img)
 ```
 
 The count of victims captured into a dataset or combination of datasets is $n_{11}, n_{10}, n_{01}$, and $n_{00}$.  Each of these cells is a count of victims captured. The subscripts denote which datasets a victim has been captured.  The subscripts denotes if the victim has been captured (1), or not been captured by a certain data set.  For $n_{ij}$, $i$ is for dataset #1 and $j$ is dataset #2.  
