@@ -28,7 +28,7 @@ header-includes:
 geometry: left=0.75in,right=0.75in,top=1.1in,bottom=1in
 ---
 ```{r setup, include=F}
-knitr::opts_chunk$set(echo=F, message=F, warning=F)
+knitr::opts_chunk$set(message=F, warning=F)
 
 require(tidyverse)
 require(janitor)
@@ -606,3 +606,10 @@ Junker, B. (2007). Carnegie Mellon Lecture Notes: 36-720: Log-Linear Models: Thr
 Landman, Todd and Carvalho, Edzia (2009). Measuring Human Rights. London: Routledge.
 
 Mitchell, Shira (2014). Capture-recapture Estimation for Conflict Data and Hierarchical Models for Program Impact Evaluation. Retrieved from <https://dash.harvard.edu/bitstream/handle/1/12274610/Mitchell_gsas.harvard_0084L_11586.pdf?sequence=4&isAllowed=y>
+
+
+```{r printcode}
+#PRINTING THE CODE
+#knitr::stitch("HW06.Rmd") to go to latex
+#knitr::stitch(   script="Categorical-FinalProject.Rmd"  , system.file("misc", "knitr-template.Rhtml", package="knitr")) #code to HTML
+```
