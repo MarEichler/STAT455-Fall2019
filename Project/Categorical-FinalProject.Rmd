@@ -54,7 +54,9 @@ knitr::opts_chunk$set(fig.pos='H')
 
 Casanare is a large, rural state in Colombia that includes 19 municipalities and a population of almost 300,000 inhabitants. Located in the foothills of the Andes, Casanare has a history of violence. Casanare (alongside other states, including Arauca) became pivotal to the Colombian government in the 1980s and 1990s when oil reserves were discovered there. Because of this natural resource, the government targeted opposition to what was perceived as the Colombian interest and modernization and the Union Patriotica (UP) in Casanare (as well as Arauca), who supported people’s access to land and workers’ rights, became the victim. Multiple armed groups operated in Casanare, including the Colombian military, paramilitaries, and guerrillas, going after “members” (both actual members and merely perceived supporters) of the UP. As a result, many Casanare citizens suffered violent deaths and disappearances. It can be argued that what was seen in Casanare (among other places) in Colombia was “political” genocide (Gomez-Suarez, 2007). But, one of the contentions against framing this episode in Colombian history as a genocide is the low death and disappearances toll.
 
-So how many people have been killed or disappeared? We review the Human Rights Data Nalaysis Group (HRDAG)’s reporting on this issue of population estimation (Guzman et al., 2007).  In this study, the authors used information about victims of killings and disappearances provided by 15 datasets .Any accounting of lethal violence will be incorrect if we assume that any one dataset or combination of datasets contains a comprehensive count of violent acts and disappearances. Registries of violent acts kept by governmental and non-governmental institutions contain some, but not all, of the records of lethal violence. Organizations collecting this data may only have access to certain subsets of a population or geographic areas. 
+So how many people have been killed or disappeared? We review the Human Rights Data Analysis Group (HRDAG)’s
+reporting on this issue of population estimation (Guzman et al., 2007). In this study, the authors used information about victims of killings and disappearances provided by 15 datasets .Any accounting of lethal violence will be incorrect if we assume that any one dataset or combination of datasets contains a comprehensive count of violent acts and disappearances. Registries of violent acts kept by governmental and non-governmental institutions contain some, but not all, of the records of lethal violence. Organizations collecting this data may only have access to certain subsets of a population or geographic areas
+
 
 The datasets come from state agencies – including government, security, forensic and judicial bodies – and from civil society organizations. Across these 15 datasets, there are individuals that have been "captured" only by one dataset, and some that have been captured by multiple. How can we disambiguate the patterns of violence?
 
@@ -64,12 +66,13 @@ The datasets come from state agencies – including government, security, forens
 The goal is to estimate the overall population of victims by first estimating the victims who are not captured by any of the datasets.  MSE estimates the total number of disappearances by comparing the size of the overlap(s) between lists to the sizes of the lists themselves. If the overlap is small, this implies that the population from which the lists were drawn is much larger than the lists. If, on the other hand, most of the cases on the lists overlap, this implies that the overall population is not much larger than the number of cases listed.
 
 
-```{r img.MSE, fig.height=3, fig.cap="Multiple System Estimation"}
+```{r img.MSE, fig.height=3, fig.cap="Multiple System Estimation^[Green, Amelia Hoover (2013) Multiple Systems Estimation: Stratification and Estimation. Available HTTP: <https://hrdag.org/2013/03/20/mse-stratification-estimation/> (accessed 4 December 2019)]"}
 library(png)
 library(grid)
-#img <- readPNG("mse_review.png")
- #grid.raster(img)
+img <- readPNG("mse_review.png")
+ grid.raster(img)
 #![](mse_review.png) need to cite this
+
 ```
 
 
@@ -77,11 +80,11 @@ library(grid)
 
 There are several MSE assumptions that are need for when there are two "systems" (lists), but not more than that. The assumptions are: 
 
-1. *Closed system*: The population of interest does not change during the measurement period.  This means that the object of measurement, whether that is a population of persons in a country or a population of violent events that occurred in a state, is a closed system: the target population does not change during the period of measurement. This assumption is generally unproblematic for data on violent events, because events that occurred cannot “un-occur” later.
+1. *Closed system*: The population of interest does not change during the measurement period.  This means that the object of measurement, whether that is a population of persons in a country or a population of violent events that occurred in a state, is a closed system: the target population does not change during the period of measurement. This assumption is generally un-problematical for data on violent events, because events that occurred cannot “un-occur” later.
 
 2. *Perfect matching (record linkage!)*: The overlap between systems (i.e., the group of cases recorded in more than one list) is perfectly identified.
 
-3. *Equal probability of capture*: For every data system, each individual has an equal probability of being captured. For example, every death has probability X of being recorded in list 1, every death has probability Y of being recorded in list 2, and so on. TThis assumption, the homogeneity of capture probability, is unlikely to hold for any type of violence data. For example, persons with fewer social connections may be both more likely to go missing and less likely to be reported missing; rural locations are more difficult to access than urban ones. Constructing two-sample estimates without accounting for different probabilities of capture leads to conclusions that may be biased.
+3. *Equal probability of capture*: For every data system, each individual has an equal probability of being captured. For example, every death has probability X of being recorded in list 1, every death has probability Y of being recorded in list 2, and so on. This assumption, the homogeneity of capture probability, is unlikely to hold for any type of violence data. For example, persons with fewer social connections may be both more likely to go missing and less likely to be reported missing; rural locations are more difficult to access than urban ones. Constructing two-sample estimates without accounting for different probabilities of capture leads to conclusions that may be biased.
 
 4. *Independence of lists*: Capture in one list does not affect probability of capture in another list. For example, being reported to one NGO does not change the probability that an individual is reported to another. The third assumption, independence of systems, is similarly difficult to meet.
 
@@ -118,7 +121,7 @@ unique_records<-unique_records %>%
 
 
 # print table with each data source and total records "captured"
-org_names <- c("Colombian Commision of Jurists", "Equitas", "Fondelibertad", "National Institute of Forensic Medicine Disappearances", "Policía Nacional ", "CINEP ", "Families of Victims’ Organizations","Prosecutor General of Santa Rosa", "Instituto Nacional de Medicina Legal ", "Vice Presidency Office", "Colombia-Europe", "Technical Investigative Body of the Prosecutor Generals Office", "Prosecutor General list of the Disappeared", "Gaula","Pais Libre" ) 
+org_names <- c("Colombian Commission of Jurists", "Equitas", "Fondelibertad", "National Institute of Forensic Medicine Disappearances", "Policía Nacional ", "CINEP ", "Families of Victims’ Organizations","Prosecutor General of Santa Rosa", "Instituto Nacional de Medicina Legal ", "Vice Presidency Office", "Colombia-Europe", "Technical Investigative Body of the Prosecutor Generals Office", "Prosecutor General list of the Disappeared", "Gaula","Pais Libre" ) 
 
 
 contigency_table<-data.frame(org = org_names,
@@ -283,7 +286,7 @@ $$
 \end{aligned}
 $$
 
-As with any regression and data mining model, we want to avoid overfitting. There is a tradeoff we need to balance between "goodness of fit", and simple (parsimonious) models.
+As with any regression and data mining model, we want to avoid over-fitting. There is a trade off we need to balance between "goodness of fit", and simple (parsimonious) models.
 
 We need to find the best model in order to get an accurate estimate of $\alpha$. Thus, we should determine whether the full (saturated) model above, which assumes that all three two-way interactions between datasets are important, is actually necessary. There is one simpler models that assume the two-way interaction.
 
@@ -301,8 +304,8 @@ In this case, we can clearly write out the possible model.  During model selecti
 
 ## Challenges with Loglinear models
 
-1.  **Interpretation:** The inclusion of so many variables in loglinear models often makes interpretation very difficult.  
-2. **Independence Assumption:** The frequency in each cell is independent of frequencies in all other cells, which is not necessarily the case here. We attempt to model this.  
+1.  **Interpretation:** The inclusion of so many variables in loglinear models often makes interpretation very difficult. 
+2. **Independence Assumption:** The frequency in each cell is independent of frequencies in all other cells, which is not necessarily the case here. We attempt to model this.
 3. **Sample Size Requirement:** With loglinear models, you need to have at least 5 times the number of cases as cells in your data.  If you do not have the required amount of cases, then you need to increase the sample size or eliminate one or more of the variables.
 
 
@@ -342,12 +345,9 @@ for_venn <- cap_indicators[,c(16:20)] %>%
 par(mar=c(.1,1,2,1)) #make margins smaller
 dga::venn4(c(2000,for_venn$new_Freq),num.test.points = 100000, main='Overlap of Security, Forensic, Judicial and Civil lists') #rough diagram of overlap
 ```
-
-
-
   
   
-In the above Venn Diagram, the colored dots represent a specific victim.  We are trying to estimate the victims that are not captured in one of th lists (shown by the graph dots).  We can see there is not a lot of overlap, which suggests there may be lack of heterogeneity capture probability (i.e. the probability of a victim captured differs from list to list).  In addition, this implies that there is likely a much larger population of victims than counted in the 15 datasets.  
+In the above Venn Diagram, the colored dots represent a specific victim.  We are trying to estimate the victims that are not captured in one of the lists (shown by the graph dots).  We can see there is not a lot of overlap, which suggests there may be lack of heterogeneity capture probability (i.e. the probability of a victim captured differs from list to list).  In addition, this implies that there is likely a much larger population of victims than counted in the 15 datasets.  
 
 
 ## Model Definitions  
@@ -408,7 +408,7 @@ boxplot(loglinear_models) #residuals for heterogen.
 ```
   
   
-These boxplots of residuals offer a general assessment of model fit.  These boxplots of residuals offer a general assessment of model fit.  
+These boxplots of residuals offer a general assessment of model fit.  These boxplots of residuals offer a general assessment of model fit. 
 
 Since the individual cell counts: 
 $$n_i \sim Pois(m_i)$$
@@ -423,7 +423,6 @@ are approximately mean 0, variance 1. This is why they are sensible residuals to
 
 The light dotted line represents zero, and ideally you want the residuals centered around zero.  We see that there is significantly less variation in the $M_{th}$ Models.  These models account for list heterogeneity (probability of capture for a specific victim varies from list to list) and individual heterogeneity (probability of capture for a specific list varies from victim to victim).  Models that account for heterogeneity offer less variation but also do not have residuals centered at zero.  
 
-\newpage  
 ## Specific Model Results 
 
 ```{r modelProfileLike, fig.cap='Profile Likelihood of Specific Model'}
@@ -485,12 +484,9 @@ $$
 $$
 
  We perform log-likelihood ratio test and see that the higher the order of the interaction, the better the fit (with saturated model signifying a perfect fit). The model deviance (LR statistic for testing against the saturated model) for each is defined as:
-
 $$G^{2}=2 \sum_{i} n_{i} \log \left(n_{i} / \hat{m}_{i}\right)=\sum_{i} d_{i} $$
 
-We perform log-likelihood ratio test and see that the higher the order of the interaction, the greater the deviance explained. Each LRT for the nested models demonstrates that- the p-value for the reduction in deviance is significant. 
-
-Note that these obey the **hierarchy principle**: If the $k$-way interaction is in the model then every lower order interaction and main effect is also in the model. 
+We perform log-likelihood ratio test and see that the higher the order of the interaction, the greater the deviance explained. Each LRT for the nested models demonstrates that- the p-value for the reduction in deviance is significant.  Note that these obey the **hierarchy principle**: If the $k$-way interaction is in the model then every lower order interaction and main effect is also in the model. 
 
 ```{r hierch_models1}
 independence_model <- loglm(new_Freq ~ security_ind + forensic_ind + judicial_ind + civil_ind, data=test)
@@ -510,17 +506,13 @@ knitr::kable(anova.table, format="latex", booktabs=T, caption="ANOVA for 3 stand
 
 ### Iterative Proportional Fitting
 
-We will use iterative proportional fitting to estimate $N$.  The iterative proportional fitting process generates maximum likelihood estimates of the expected cell frequencies for a hierarchical model.  In short, preliminary estimates of the expected cell frequencies are successfully adjusted to fit each of the marginal sub-tables specified in the model.The unadjusted data cells may be referred to as the ‘seed’ cells, and the selected totals may be referred to as the ‘marginal’ totals.
-
+We will use iterative proportional fitting to estimate $N$.  The iterative proportional fitting process generates maximum likelihood estimates of the expected cell frequencies for a hierarchical model.  In short, preliminary estimates of the expected cell frequencies are successfully adjusted to fit each of the marginal sub-tables specified in the model.The un-adjusted data cells may be referred to as the ‘seed’ cells, and the selected totals may be referred to as the ‘marginal’ totals.  
 Here the marginal subtables would be:
 
-* Security by Judicial by Forensic systems
-
-* Security by Forensic by Civil systems
-
-* Judicial by Forensic by Civil systems
-
-* Judicial by Civil by by Security  systems
+1. Security by Judicial by Forensic systems
+2. Security by Forensic by Civil systems
+3. Judicial by Forensic by Civil systems
+4. Judicial by Civil by by Security  systems
 
 
 To do this four-dimensional IPF:
@@ -600,7 +592,7 @@ As can be seen, there is a lot of uncertainty about the true total of deaths and
 
 Agresti, A. (2003). Introduction to Categorical Data Analysis. 394.
 
-Ballesteros, A., Restrepo, J., Spagat, M., and Vargas, J. (2007) The Work of Amnesty International and Human Rights Watch: Evidence from Colombia, Bogota, Colombia: Centro de Recursos para el Analisis de Conflictos. Online. Available HTTP: <http://cerac.org.co/assets/pdf/Other%20publications/CERAC_WP_4.pdf> (accessed 4 December 2009).
+Ballesteros, A., Restrepo, J., Spagat, M., and Vargas, J. (2007) The Work of Amnesty International and Human Rights Watch: Evidence from Colombia, Bogota, Colombia: Centro de Recursos para el Analisis de Conflictos. Online. Available HTTP: <http://cerac.org.co/assets/pdf/Other%20publications/CERAC_WP_4.pdf> (accessed 4 December 2019).
 
 Christensen, R. (2006). Log-Linear Models and Logistic Regression. Springer Science & Business Media.
 
@@ -608,7 +600,7 @@ Darroch, J., Fienberg, S., Gary F. V. Glonek, & Junker, B. (1993). A Three-Sampl
 
 Gomez-Suarez, Andre (2007). “Perpetrator blocs, genocidal mentalities and geographies: the destruction of the Union Patriotica in Colombia and its lessons for genocide studies.” Journal of Genocide Research9:4, 637-660.
 
-Guzman, D., Guberek, T., Hoover, A. and Ball, P. (2007) Missing People in Casanare, Palo Alto, CA: Human Rights Data Analysis Group. Palo Alto, CA: Benetech Initiative. Online. Available HTTP: <www.hrdag.org/resources/publications/casanare-missing- report.pdf> (accessed 4 2009). 
+Guzman, D., Guberek, T., Hoover, A. and Ball, P. (2007) Missing People in Casanare, Palo Alto, CA: Human Rights Data Analysis Group. Palo Alto, CA: Benetech Initiative. Online. Available HTTP: <www.hrdag.org/resources/publications/casanare-missing- report.pdf> (accessed 4 2019). 
 
 Junker, B. (2007). Carnegie Mellon Lecture Notes: 36-720: Log-Linear Models: Three-Way Tables. Retrieved from <http://www.stat.cmu.edu/~brian/720/week03/04-loglinear.pdf>
 
