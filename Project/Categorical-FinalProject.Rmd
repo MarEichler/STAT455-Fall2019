@@ -17,6 +17,8 @@ header-includes:
 - \usepackage{float} #to hold things in place
 - \usepackage{lastpage}
 - \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
 - \pagestyle{fancy}
 - \floatplacement{figure}{H}
 - \fancyhf{}
@@ -50,11 +52,11 @@ knitr::opts_chunk$set(fig.pos='H')
 
 # Estimates of Killing in Casanare
 
-Casanare is a large, rural state in Colombia that includes 19 municipalities and a population of almost 300,000 inhabitants. Located in the foothills of the Andes, Casanare has a history of violence. Casanare (alongside other states, including Arauca) became pivotal to the Colombian government in the 1980s and 1990s when oil reserves were discovered there. Because of this natural resource, the government targeted opposition to what was perceived as the Colombian interest and modernization and the Union Patriotica (UP) in Casanare (as well as Arauca), who supported people’s access to land and workers’ rights, became the victim. Multiple armed groups operated in Casanare, including the Colombian military, paramilitaries, and guerillas, going after “members” (both actual members and merely perceived supporters) of the UP. As a result, many Casanare citizens suffered violent deaths and disappearances. It can be argued that what was seen in Casanare (among other places) in Colombia was “political” genocide (Gomez-Suarez, 2007). But, one of the contentions against framing this episode in Colombian history as a genocide is the low death and disappearances toll.
+Casanare is a large, rural state in Colombia that includes 19 municipalities and a population of almost 300,000 inhabitants. Located in the foothills of the Andes, Casanare has a history of violence. Casanare (alongside other states, including Arauca) became pivotal to the Colombian government in the 1980s and 1990s when oil reserves were discovered there. Because of this natural resource, the government targeted opposition to what was perceived as the Colombian interest and modernization and the Union Patriotica (UP) in Casanare (as well as Arauca), who supported people’s access to land and workers’ rights, became the victim. Multiple armed groups operated in Casanare, including the Colombian military, paramilitaries, and guerrillas, going after “members” (both actual members and merely perceived supporters) of the UP. As a result, many Casanare citizens suffered violent deaths and disappearances. It can be argued that what was seen in Casanare (among other places) in Colombia was “political” genocide (Gomez-Suarez, 2007). But, one of the contentions against framing this episode in Colombian history as a genocide is the low death and disappearances toll.
 
 So how many people have been killed or disappeared? We review the Human Rights Data Nalaysis Group (HRDAG)’s reporting on this issue of population estimation (Guzman et al., 2007).  In this study, the authors used information about victims of killings and disappearances provided by 15 datasets .Any accounting of lethal violence will be incorrect if we assume that any one dataset or combination of datasets contains a comprehensive count of violent acts and disappearances. Registries of violent acts kept by governmental and non-governmental institutions contain some, but not all, of the records of lethal violence. Organizations collecting this data may only have access to certain subsets of a population or geographic areas. 
 
-The datasets come from state agencies – including government, security, forensic and judicial bodies – and from civil society organizations. Across these 15 datasets, there are individuals that have been "captured" only by one dataset, and some that have been captured by multiple. How can we disambguiate the patterns of violence?
+The datasets come from state agencies – including government, security, forensic and judicial bodies – and from civil society organizations. Across these 15 datasets, there are individuals that have been "captured" only by one dataset, and some that have been captured by multiple. How can we disambiguate the patterns of violence?
 
 \newpage  
 # Multiple Systems Estimation (MSE), Capture Re-Capture 
@@ -65,8 +67,8 @@ The goal is to estimate the overall population of victims by first estimating th
 ```{r img.MSE, fig.height=3, fig.cap="Multiple System Estimation"}
 library(png)
 library(grid)
-img <- readPNG("mse_review.png")
- grid.raster(img)
+#img <- readPNG("mse_review.png")
+ #grid.raster(img)
 #![](mse_review.png) need to cite this
 ```
 
@@ -79,11 +81,11 @@ There are several MSE assumptions that are need for when there are two "systems"
 
 2. *Perfect matching (record linkage!)*: The overlap between systems (i.e., the group of cases recorded in more than one list) is perfectly identified.
 
-3. *Equal probability of capture*: For every data system, each individual has an equal probability of being captured. For example, every death has probability X of being recorded in list 1, every death has probability Y of being recorded in list 2, and so on. TThis assumption, the homogeneity of capture probability, is unlikely to hold for any type of violence data. For example, persons with fewer social connections may be both more likely to go missing and less likely to be reportedmissing; rural locations are more difficult to access than urban ones. Constructing two-sample estimates without accounting for different probabilities of capture leads to conclusions that may be biased.
+3. *Equal probability of capture*: For every data system, each individual has an equal probability of being captured. For example, every death has probability X of being recorded in list 1, every death has probability Y of being recorded in list 2, and so on. TThis assumption, the homogeneity of capture probability, is unlikely to hold for any type of violence data. For example, persons with fewer social connections may be both more likely to go missing and less likely to be reported missing; rural locations are more difficult to access than urban ones. Constructing two-sample estimates without accounting for different probabilities of capture leads to conclusions that may be biased.
 
 4. *Independence of lists*: Capture in one list does not affect probability of capture in another list. For example, being reported to one NGO does not change the probability that an individual is reported to another. The third assumption, independence of systems, is similarly difficult to meet.
 
-Like differences in capture probability, dependences between systems are impossible to account for in the the two-system setting. A common example here is the difference between governmental and non-governmental organizations. Because different populations may have different levels of trust in the two organizations, reporting to one type of organization may imply that the witness is very unlikely to report to the other. 
+Like differences in capture probability, dependencies between systems are impossible to account for in the the two-system setting. A common example here is the difference between governmental and non-governmental organizations. Because different populations may have different levels of trust in the two organizations, reporting to one type of organization may imply that the witness is very unlikely to report to the other. 
 
 # Overview of Data 
 
@@ -136,7 +138,7 @@ knitr::kable(contigency_table, format="latex", booktabs=T, caption="Contingency 
 
 ## Overall Trends  
 
-The following graph shows that violence has been concentrated in $\textcolor{red}{\text{municipality}}$.  We can see that the *reported* violence (i.e. the counts in the 15 datasets) appears to have intensified across all municipalities in Casanare in 2003-2004 and then dropped.
+The following graph shows that violence has been concentrated in Yopal.  We can see that the *reported* violence (i.e. the counts in the 15 datasets) appears to have intensified across all municipalities in Casanare in 2003-2004 and then dropped.
 
 ```{r mapping-whole-country}
 #group deaths by municipality
@@ -185,11 +187,11 @@ gridExtra::grid.arrange(casanare_overall_plot, casanare_by_years, nrow=1)
 ```
 
 
-Looking just at the totals of the 15 datasets, that data suggest the violence peaked in 2003-2004 and the total number of victims is 3501.  However, just looking at the trends amoung the totals of the 15 datasets does not give the whole picture.  
+Looking just at the totals of the 15 datasets, that data suggest the violence peaked in 2003-2004 and the total number of victims is 3501.  However, just looking at the trends among the totals of the 15 datasets does not give the whole picture.  
 
-## Heterogenity Issues
+## Heterogeneity Issues
 
-One of the requirements for MSE is for each individual has equal probability of caputure for a given list.  However, we can see from the firgure below this does not seem to be the case.  In 2004, the violence was centered around $\textcolor{red}{\text{municipality}}$, but all three of these listis have very little counts in that location.  Since these individual list charts have different gradient trends than the total, that suggest that there is heterogenity in capture probability.  This will make our results more uncertain.  
+One of the requirements for MSE is for each individual has equal probability of capture for a given list.  However, we can see from the figure below this does not seem to be the case.  In 2004, the violence was centered around Villanueva, but all three of these lists have very little counts in that location.  Since these individual list charts have different gradient trends than the total, that suggest that there is heterogeneity in capture probability.  This will make our results more uncertain.  
 
 
 ```{r threeorg2004, fig.height=2.5, fig.cap="Counts from Three Different Datasets in 2004"}
@@ -205,14 +207,14 @@ test_this <- colombia_dat %>% filter(name_1 == "Casanare") %>%
 
 hetromap <- ggplot(test_this, aes(fill= Freq)) + scale_fill_gradient(low='white', high= 'red')+ 
   geom_sf() +
-  theme_void() + facet_wrap( ~ data_lists)+ ggtitle('Dissapearances/Kidnappings Across Municipalities by Different Organizations, in 2004')
+  theme_void() + facet_wrap( ~ data_lists)+ ggtitle('Disappearances/Kidnappings Across Municipalities by Different Organizations, in 2004')
 
 hetromap
 ```
 
 ## Different Datasets - Different Stories 
 
-We motivate our need for a more sophisticated analysis by showing the reporting patterns of 3 different organizations across 1998-2007. If we relied on just one organization or even a combination of two we could tell differnt stories regarding the violence. Relying on FAM shows a peak in violent incidents in 2003, while reports by IMLM show a peak in 2004 . Using multiple systems estimation allows us to parse both the reported and unreported violent in Casanare.
+We motivate our need for a more sophisticated analysis by showing the reporting patterns of 3 different organizations across 1998-2007. If we relied on just one organization or even a combination of two we could tell different stories regarding the violence. Relying on FAM shows a peak in violent incidents in 2003, while reports by IMLM show a peak in 2004 . Using multiple systems estimation allows us to parse both the reported and unreported violent in Casanare.
 
 ```{r motivation-plot}
 #list by year
@@ -242,13 +244,13 @@ In order to do our estimation, we will use loglinear modeling.  We will describe
 ```{r img.example, fig.height=3,echo=FALSE}
 library(png)
 library(grid)
-img <- readPNG("2datasetexample.png")
- grid.raster(img)
+#img <- readPNG("2datasetexample.png")
+ #grid.raster(img)
 ```
 
-The count of victims captured into a dataset or combindation of datasets is $n_{11}, n_{10}, n_{01}$, and $n_{00}$.  Each of these cells is a count of victims captured. The subscripts denote which datasets a victim has been captured.  The subscripts denotes if the victim has been captured (1), or not been captured by a certain data set.  For $n_{ij}$, $i$ is for dataset #1 and $j$ is dataset #2.  
+The count of victims captured into a dataset or combination of datasets is $n_{11}, n_{10}, n_{01}$, and $n_{00}$.  Each of these cells is a count of victims captured. The subscripts denote which datasets a victim has been captured.  The subscripts denotes if the victim has been captured (1), or not been captured by a certain data set.  For $n_{ij}$, $i$ is for dataset #1 and $j$ is dataset #2.  
 
-Our estimates are primarily based on Poisson regression.  Poisson regression treaets these cell counts - not the underlying individual cases data  
+Our estimates are primarily based on Poisson regression. 
 
 ## Estimating the Total Count of Victims 
 
@@ -345,21 +347,21 @@ dga::venn4(c(2000,for_venn$new_Freq),num.test.points = 100000, main='Overlap of 
 
   
   
-In the above Venn Diagram, the colored dots represent a specific victim.  We are trying to estimate the victims that are not caputred in one of th lists (shown by the graph dots).  We can see there is not a lot of overlap, which suggests there may be lack of heterogenity capture probability (i.e. the probability of a victim captured differs from list to list).  In addition, this implies that there is likely a much larger population of victims than counted in the 15 datasets.  
+In the above Venn Diagram, the colored dots represent a specific victim.  We are trying to estimate the victims that are not captured in one of th lists (shown by the graph dots).  We can see there is not a lot of overlap, which suggests there may be lack of heterogeneity capture probability (i.e. the probability of a victim captured differs from list to list).  In addition, this implies that there is likely a much larger population of victims than counted in the 15 datasets.  
 
 
 ## Model Definitions  
 
 ### Types of Models  
 
-Models will be donoted by $M$, and the subscripts will denote the type of model. 
+Models will be denoted by $M$, and the subscripts will denote the type of model. 
 
 * $M_0$: The $M_0$ model is the simplest possible multiple source capture recapture model. It assumes that there is no heterogeneity and that all lists (civil, security, judicial, etc) have the same probability of capturing individuals. We know that this is not the case here.
 * $M_t$: This model relaxes the $M_0$ model to allow for lists to have different capture rates.
 * $M_h$: This model relaxes the $M_0$ model to allow for individual capture heterogeneity.
 * $M_{th}$: This model allows for both list heterogeneity and capture events having different rates.
 
-### Types of Heterogeniety  
+### Types of Heterogeneity  
 
 When heterogeneity in capture probability is present (i.e. the probability of a list capturing a victims differs), there are different forms that this heterogeneity can take. 
 
@@ -371,11 +373,11 @@ When heterogeneity in capture probability is present (i.e. the probability of a 
 
 ## Non-Hierarchical Models
 
-After collapsing the 15 lists into four systems, we fit several loglinear models. We see that the best fits clearly take into account both system and individual heterogeneity. We therefore choose the $M_{th}$ model with the log odds of capture among those who were not captured follows a Gamma distribution. We see that the $M_0$ model demonstrates a clear lack of fit, which we would expect for this data. The models listed below are *not* hierchachal in nature. 
+After collapsing the 15 lists into four systems, we fit several loglinear models. We see that the best fits clearly take into account both system and individual heterogeneity. We therefore choose the $M_{th}$ model with the log odds of capture among those who were not captured follows a Gamma distribution. We see that the $M_0$ model demonstrates a clear lack of fit, which we would expect for this data. The models listed below are *not* hierarchical in nature. 
 
-We will need the hierchachal structure to perform model selection. It’s important to note that a model is not chosen if it bears no resemblance to the observed data.  The choice of a preferred model is typically based on a formal comparison of goodness-of-fit statistics associated with models that are related hierarchically (models containing higher order terms also implicitly include all lower order terms).  Ultimately, the preferred model should distinguish between the pattern of the variables in the data and sampling variability, thus providing an intuitive interpretation.  
+We will need the hierarchical structure to perform model selection. It’s important to note that a model is not chosen if it bears no resemblance to the observed data.  The choice of a preferred model is typically based on a formal comparison of goodness-of-fit statistics associated with models that are related hierarchically (models containing higher order terms also implicitly include all lower order terms).  Ultimately, the preferred model should distinguish between the pattern of the variables in the data and sampling variability, thus providing an intuitive interpretation.  
 
-The “number of captured units” is the number of observed elements, in this example, the number of people documented as missing/killed, we usually call this $N_c$ ($N$ for overall total, and $c$ denoting caputred. The “abundance” column shows the estimate of $\hat{N}$, the total population including the observed and the estimated unobserved deaths. The AIC and BIC columns show the “information coefficients” which balance the goodness of fit (shown in the “deviance” column) with the information used to estimate the model (degrees of freedom indicate this).  Model selection often occurs based on the smallest AIC and BIC values, however this can only be done with hierchical models which is not the case here.  
+The “number of captured units” is the number of observed elements, in this example, the number of people documented as missing/killed, we usually call this $N_c$ ($N$ for overall total, and $c$ denoting captured. The “abundance” column shows the estimate of $\hat{N}$, the total population including the observed and the estimated unobserved deaths. The AIC and BIC columns show the “information coefficients” which balance the goodness of fit (shown in the “deviance” column) with the information used to estimate the model (degrees of freedom indicate this).  Model selection often occurs based on the smallest AIC and BIC values, however this can only be done with hierarchical models which is not the case here.  
 
 ```{r NOT-HIERCH-models}
 test <- cap_indicators[,c(16:20)] %>% 
@@ -406,7 +408,20 @@ boxplot(loglinear_models) #residuals for heterogen.
 ```
   
   
-These boxplots of residuals offer a general assesment of model fit.  The light dotted line represents zero, and ideally you want the residuals centered around zero.  We see that there is significantly less variation in the $M_{th}$ Models.  These models account for list heterogenity (probability of capture for a specific victim varies from list to list) and individual heterogenity (probability of capture for a specific list varies from victim to victim).  Models that account for heterogenity offer less variation but also do not have residuals centered at zero.  
+These boxplots of residuals offer a general assessment of model fit.  These boxplots of residuals offer a general assessment of model fit.  
+
+Since the individual cell counts: 
+$$n_i \sim Pois(m_i)$$
+
+$$E[n_i] = Var(n_i) = m_i $$
+
+it follows that the Pearson residuals:
+
+$$r_i = \frac{n_i - \hat{m_i}}{\sqrt(m_i)} $$
+
+are approximately mean 0, variance 1. This is why they are sensible residuals to use.
+
+The light dotted line represents zero, and ideally you want the residuals centered around zero.  We see that there is significantly less variation in the $M_{th}$ Models.  These models account for list heterogeneity (probability of capture for a specific victim varies from list to list) and individual heterogeneity (probability of capture for a specific list varies from victim to victim).  Models that account for heterogeneity offer less variation but also do not have residuals centered at zero.  
 
 \newpage  
 ## Specific Model Results 
@@ -451,10 +466,10 @@ plot(desc)
 \newpage  
 ## Hierarchical Models
 
-### Three Model Example  
+### More Interactions: Better Fit
 
-We start by fitting three simple models.  
-The first, and simplest, is the model that assumes independence between the four systems.  The second model looks at two-way interactions.  The third models looks at a four-way interaction between each of the systems. Recall that 1=Security, 2=Forensic, 3=Judicial, and 4=Civil.  
+We start by fitting three simple models.  The first, and simplest, is the model that assumes independence between the four systems.  The second model looks at all possible two-way interactions.  The third models looks at all three-way interaction between each of the systems. Recall that 1=Security, 2=Forensic, 3=Judicial, and 4=Civil.  
+
 
 $$
 \begin{aligned}
@@ -463,11 +478,19 @@ $$
 \text{Model 2:} \quad \log(\hat{N}) &= \alpha + \lambda_1 + \lambda_2 + \lambda_{13} + \lambda_{14} +
 \lambda_{23} + \lambda_{24} + \lambda_{34}  
 \\
-\text{Model 3:} \quad \log(\hat{N}) &= \alpha + \lambda_{1234}
+\text{Model 3:} \quad \log(\hat{N}) &= \alpha +  \lambda_1 + \lambda_2 + \lambda_{13} + \lambda_{14} +
+\lambda_{23} + \lambda_{24} + \lambda_{34}  + \lambda_{123} + \lambda_{124} + \lambda_{134} + \lambda_{234} 
+\\
 \end{aligned}
 $$
 
- We perform log-likelihood ratio test and see that the higher the order of the interaction, the better the fit.  Note that these obey the **hierarchy principle**: If the $k$-way interaction is in the model then every lower order interaction and main effect is also in the model. 
+ We perform log-likelihood ratio test and see that the higher the order of the interaction, the better the fit (with saturated model signifying a perfect fit). The model deviance (LR statistic for testing against the saturated model) for each is defined as:
+
+$$G^{2}=2 \sum_{i} n_{i} \log \left(n_{i} / \hat{m}_{i}\right)=\sum_{i} d_{i} $$
+
+We perform log-likelihood ratio test and see that the higher the order of the interaction, the greater the deviance explained. Each LRT for the nested models demonstrates that- the p-value for the reduction in deviance is significant. 
+
+Note that these obey the **hierarchy principle**: If the $k$-way interaction is in the model then every lower order interaction and main effect is also in the model. 
 
 ```{r hierch_models1}
 independence_model <- loglm(new_Freq ~ security_ind + forensic_ind + judicial_ind + civil_ind, data=test)
@@ -481,15 +504,13 @@ anovafit <- anova(independence_model, no_three, no_four_way, test="LR") #LRT
 anova.table <- anovafit[1:4,]
 
 
-knitr::kable(anova.table, format="latex", booktabs=T, caption="Looking at Three Models") %>% 
+knitr::kable(anova.table, format="latex", booktabs=T, caption="ANOVA for 3 standard models") %>% 
   kableExtra::kable_styling(latex_options = "HOLD_position")
 ```
 
-$\textcolor{red}{\text{what does this mean?? what is the point of having this table??}}$
-
 ### Iterative Proportional Fitting
 
-We will use iterative proportional fitting to estimate $N$.  The iterative proportional fitting process generates maximum likelihood estimates of the expected cell frequencies for a hierarchical model.  In short, preliminary estimates of the expected cell frequencies are successfully adjusted to fit each of the marginal sub-tables specified in the model.The unadjusted data cells may be referred to as the ‘seed’ cells, and the selected totals may be referred to as the ‘marginal’ totals
+We will use iterative proportional fitting to estimate $N$.  The iterative proportional fitting process generates maximum likelihood estimates of the expected cell frequencies for a hierarchical model.  In short, preliminary estimates of the expected cell frequencies are successfully adjusted to fit each of the marginal sub-tables specified in the model.The unadjusted data cells may be referred to as the ‘seed’ cells, and the selected totals may be referred to as the ‘marginal’ totals.
 
 Here the marginal subtables would be:
 
@@ -510,9 +531,11 @@ To do this four-dimensional IPF:
 4. Proportionally adjust each stack of cells to equal the pre-determined totals of Marginal 4. This is the end of the first ‘Iteration’.
 5. Repeat the above steps until the desired level of convergence is reached.  
 
+Under mild restrictions, we know that the cell-values at the end of this process that satisfy the fitted marginal totals are the MLEs.
+
 ### Results 
 
-Using iterative proportional fitting, we fit all possible two-way hierch. models.(We restricting to second-order, so no three-way interactions, for sake of interpretation.)
+Using iterative proportional fitting, we fit all possible second-order interaction models (we restrict to second-order to aid interpretation). These will account for different dependency structures. 
 
 We choose he best model according to the BIC criteria, is below: estimates a total for missing/disappeared people as $8817$, which is similar to the  $8782$ than that of the non-hierch., interactionless, model ($M_{th}$). 
 
@@ -542,7 +565,16 @@ MAX.goodBIC.EST <- max(BIC.results[,1])
 MIN.goodBIC.EST <- min(BIC.results[,1])
 ```
 
-These the hierchical models have different estimates, ranging from 5053 TO 9268.
+We can see that the independence model listed as "1,2,3,4" has the worst fit-- this is to be expected, as we have demonstrated in previous sections the list dependencies
+
+The shorthand "14,2,3" means that lists 1 and 4 are independent of 2, and also independent of list 3, i.e. $(1,4) \indep 2$ and $(1,4) \indep 3$. It is represented by:
+
+$$\log(\hat{N}) = \alpha + \lambda_1 + \lambda_2 + \lambda_3 + \lambda_4  + \lambda_{14} $$
+
+The shorthand identifies both the model and the margins that must be fitted to obtain MLEs using IPF. Not all shorthands have a conditional independence interpretation. The top models, all with 5-6 two-way interactions cannot be interpreted in this way.
+
+These the hierarchical models have different estimates, ranging from 5053 to 9268.
+
 We also plot the BIC values for different models and their accompanying estimates of $\hat{N}$.  When we only look at estimates with a corresponding BIC value less 300, the estimates range from 5077 and 9268 (almost the exact same range of estimates when considering all the models).  
 
 ```{r hierch-modelsBIC, fig.cap="Hiercharical Models BIC Plot"}
@@ -551,20 +583,35 @@ plot(hierch_models) #BIC for a bunch of different models
 
 This is the fundamental problem of the frequentist approach. We could just pick the “best” model, i.e., the one with the lowest BIC (note the y-axis is inverted).
 
-Unfortunately, just picking one model ignores the error that we introduce by the selection itself. It also forces us to decide which dependencies among the systems we will control for, forcing us to decide which dependencies will not be included in the model.
+Unfortunately, just picking one model ignores the error that we introduce by the selection itself. It also forces us to decide which dependencies among the systems we will control for, forcing us to decide which dependencies will not be included in the model. In the future, we would look into model averaging procedures and Bayesian approaches.
 
 
 # Conclusions  
 
-$\textcolor{red}{\text{MB}}$ 
+Our findings show that the total number of deaths and disappearances in Casanare is far greater than previously assessed. The initial analysis made by Guzman et al. for the Human Rights Data Analysis Group (HRDAG), which used thirteen datasets from 1986-2007, estimated a total of 2,533 deaths and disappearances in Casanare (95% CI: 2239-2867) from 1986-2007, although only about 1,500 were reported as such (Guzman et al., 2007). We only used datasets for a subset of those years, namely 1998-2007 (fifteen datasets in total). Looking at just the raw total from the fifteen datasets, there were 3,501 incidents of deaths or disappearances in Casanare from 1998-2007. Had our analysis also included data that went back to 1986, the raw total would be even higher.
+ 
+Importantly, given estimation techniques used in our analysis, there is strong evidence that the true total of victims is actually much higher than 3,501. We used multiple systems estimation (MSE) and loglinear modeling to show that the best hierarchical models of the data produce estimates ranging from 5,077 to 9,268. While our estimation of the total number of deaths and disappearances indicates a far greater number of victims, there are some concerns estimating the true total of victims. First, the models themselves indicate a large range of possible numbers. Second, the data may not meet all the MSE and loglinear assumptions (especially the independence assumption), which makes point estimation less valid.
 
-* total under 15 datasets 3501
-* Lots of uncertaintiy (not even sure our data meets requirements for modeling)
-* "valid" estimates can range from 5077 to 9268 (could be used for different political stories)
+
+As can be seen, there is a lot of uncertainty about the true total of deaths and disappearances. Nevertheless, the number of deaths and disappearances within any given country is one important human rights measure that serves six inter-related functions: (1) contextual description and documentation, (2) classification, (3) monitoring, (4) mapping and pattern recognition, (5) analysis and policy recommendation, and (6) advocacy and political dialogue (Landman and Carvalho, 2009). While MSE and loglinear modeling can only go so far in terms of the first four functions, these statistical tools for better estimating the total of deaths and disappearances is nevertheless key for, on the one hand, analysis and policy recommendation, and on the other, advocacy and political dialogue. International NGOs like Amnesty International and Human Rights Watch respond based on the severity of human rights violations in a country, opting to use higher estimates of deaths and disappearances for their analysis of the situation in Colombia and thus their recommendations and advocacy, while the Colombian think tank, CERAC, have lower estimates (Ballesteros et al., 2007). Unfortunately, different estimates can be used as fact by different groups to proffer differing messages about the extent of human rights violations in Colombia. Nevertheless, utilizing statistical tools to show that the true total of victims is markedly higher than previously reported is particularly important for uncovering the extant nature and degree of violence in Colombia. 
 
 
 # References
 
+Agresti, A. (2003). Introduction to Categorical Data Analysis. 394.
+
+Ballesteros, A., Restrepo, J., Spagat, M., and Vargas, J. (2007) The Work of Amnesty International and Human Rights Watch: Evidence from Colombia, Bogota, Colombia: Centro de Recursos para el Analisis de Conflictos. Online. Available HTTP: <http://cerac.org.co/assets/pdf/Other%20publications/CERAC_WP_4.pdf> (accessed 4 December 2009).
+
+Christensen, R. (2006). Log-Linear Models and Logistic Regression. Springer Science & Business Media.
+
+Darroch, J., Fienberg, S., Gary F. V. Glonek, & Junker, B. (1993). A Three-Sample Multiple-Recapture Approach to Census Population Estimation with Heterogeneous Catchability. Journal of the American Statistical Association, 88(423), 1137-1148. doi:10.2307/2290811
+
 Gomez-Suarez, Andre (2007). “Perpetrator blocs, genocidal mentalities and geographies: the destruction of the Union Patriotica in Colombia and its lessons for genocide studies.” Journal of Genocide Research9:4, 637-660.
 
 Guzman, D., Guberek, T., Hoover, A. and Ball, P. (2007) Missing People in Casanare, Palo Alto, CA: Human Rights Data Analysis Group. Palo Alto, CA: Benetech Initiative. Online. Available HTTP: <www.hrdag.org/resources/publications/casanare-missing- report.pdf> (accessed 4 2009). 
+
+Junker, B. (2007). Carnegie Mellon Lecture Notes: 36-720: Log-Linear Models: Three-Way Tables. Retrieved from <http://www.stat.cmu.edu/~brian/720/week03/04-loglinear.pdf>
+
+Landman, Todd and Carvalho, Edzia (2009). Measuring Human Rights. London: Routledge.
+
+Mitchell, Shira (2014). Capture-recapture Estimation for Conflict Data and Hierarchical Models for Program Impact Evaluation. Retrieved from <https://dash.harvard.edu/bitstream/handle/1/12274610/Mitchell_gsas.harvard_0084L_11586.pdf?sequence=4&isAllowed=y>
