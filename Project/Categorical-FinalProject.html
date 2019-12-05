@@ -76,7 +76,7 @@
 
 <div class="chunk" id="auto-report"><div class="rcode"><div class="source"><pre class="knitr r">---
 title: <span class="hl str">&quot;Final Project; Categorical Data Analysis&quot;</span>
-author: <span class="hl str">&quot;Abby Smith, Miruna Baronschi, Martha Eichlersmith&quot;</span>
+author: <span class="hl str">&quot;Abby Smith, Miruna Barnoschi, Martha Eichlersmith&quot;</span>
 date: <span class="hl str">&quot;2019-12-05&quot;</span>
 output:
   pdf_document:
@@ -130,7 +130,13 @@ knitr::opts_chunk$<span class="hl kwd">set</span>(fig.pos=<span class="hl str">'
 
 Casanare is a large, rural state <span class="hl kwa">in</span> Colombia that includes 19 municipalities and a population of almost 300,000 inhabitants. Located <span class="hl kwa">in</span> the foothills of the Andes, Casanare has a history of violence. <span class="hl kwd">Casanare</span> (alongside other states, including Arauca) became pivotal to the Colombian government <span class="hl kwa">in</span> the 1980s and 1990s when oil reserves were discovered there. Because of this natural resource, the government targeted opposition to what was perceived as the Colombian interest and modernization and the Union <span class="hl kwd">Patriotica</span> (UP) <span class="hl kwa">in</span> <span class="hl kwd">Casanare</span> (as well as Arauca), who supported people’s access to land and workers’ rights, became the victim. Multiple armed groups operated <span class="hl kwa">in</span> Casanare, including the Colombian military, paramilitaries, and guerrillas, going after “members” (both actual members and merely perceived supporters) of the UP. As a result, many Casanare citizens suffered violent deaths and disappearances. It can be argued that what was seen <span class="hl kwa">in</span> <span class="hl kwd">Casanare</span> (among other places) <span class="hl kwa">in</span> Colombia was “political” <span class="hl kwd">genocide</span> (Gomez-Suarez, 2007). But, one of the contentions against framing this episode <span class="hl kwa">in</span> Colombian history as a genocide is the low death and disappearances toll.
 
-So how many people have been killed or disappeared? We review the Human Rights Data Analysis <span class="hl kwd">Group</span> (HRDAG)’s reporting on this issue of population <span class="hl kwd">estimation</span> (Guzman et al., 2007). In this study, the authors used information about victims of killings and disappearances provided by 15 datasets .Any accounting of lethal violence will be incorrect <span class="hl kwa">if</span> we assume that any one dataset or combination of datasets contains a comprehensive count of violent acts and disappearances. Registries of violent acts kept by governmental and non-governmental institutions contain some, but not all, of the records of lethal violence. Organizations collecting this data may only have access to certain subsets of a population or geographic areas
+So how many people have been killed or disappeared? We review the Human Rights Data Analysis <span class="hl kwd">Group</span> (HRDAG)’s
+reporting on this issue of population <span class="hl kwd">estimation</span> (Guzman et al., 2007). In this study, the authors used information
+about victims of killings and disappearances provided by 13 datasets. We have 15 datasets of deaths and disappearances
+in Casanare from 1998-2007. Any accounting of lethal violence will be incorrect <span class="hl kwa">if</span> we assume that any one dataset or
+combination of datasets contains a comprehensive count of violent acts and disappearances. Registries of violent acts
+kept by governmental and non-governmental institutions contain some, but not all, of the records of lethal violence.
+Organizations collecting this data may only have access to certain subsets of a population or geographic areas.
 
 
 The datasets come from state agencies – including government, security, forensic and judicial bodies – and from civil society organizations. Across these 15 datasets, there are individuals that have been <span class="hl str">&quot;captured&quot;</span> only by one dataset, and some that have been captured by multiple. How can we disambiguate the patterns of violence?
@@ -322,8 +328,8 @@ In order to do our estimation, we will use loglinear modeling.  We will describe
 ```{r img.example, fig.height=3,echo=<span class="hl kwa">FALSE</span>}
 <span class="hl kwd">library</span>(png)
 <span class="hl kwd">library</span>(grid)
-#img &lt;- <span class="hl kwd">readPNG</span>(<span class="hl str">&quot;2datasetexample.png&quot;</span>)
- #<span class="hl kwd">grid.raster</span>(img)
+img &lt;- <span class="hl kwd">readPNG</span>(<span class="hl str">&quot;2datasetexample.png&quot;</span>)
+ <span class="hl kwd">grid.raster</span>(img)
 ```
 
 The count of victims captured into a dataset or combination of datasets is $n_{11}, n_{10}, n_{01}$, and $n_{00}$.  Each of these cells is a count of victims captured. The subscripts denote which datasets a victim has been captured.  The subscripts denotes <span class="hl kwa">if</span> the victim has been <span class="hl kwd">captured</span> (1), or not been captured by a certain data set.  For $n_{ij}$, $i$ is <span class="hl kwa">for</span> dataset #1 and $j$ is dataset #2.  
@@ -729,21 +735,20 @@ Mitchell, <span class="hl kwd">Shira</span> (2014). Capture-recapture Estimation
 ##  [9] cellranger_1.1.0   chron_2.3-54       backports_1.1.4    evaluate_0.14     
 ## [13] e1071_1.7-2        highr_0.8          httr_1.4.1         pillar_1.4.2      
 ## [17] rlang_0.4.0        lazyeval_0.2.2     readxl_1.3.1       rstudioapi_0.10   
-## [21] rmarkdown_1.14     labeling_0.3       webshot_0.5.1      munsell_0.5.0     
-## [25] broom_0.5.2        compiler_3.6.1     modelr_0.1.5       xfun_0.8          
-## [29] pkgconfig_2.0.2    htmltools_0.3.6    tidyselect_0.2.5   gridExtra_2.3     
-## [33] codetools_0.2-16   viridisLite_0.3.0  crayon_1.3.4       withr_2.1.2       
-## [37] nlme_3.1-140       jsonlite_1.6       gtable_0.3.0       lifecycle_0.1.0   
-## [41] DBI_1.0.0          magrittr_1.5       units_0.6-5        scales_1.0.0      
-## [45] KernSmooth_2.23-15 cli_1.1.0          stringi_1.4.3      snakecase_0.11.0  
-## [49] xml2_1.2.2         ellipsis_0.2.0.1   generics_0.0.2     vctrs_0.2.0       
-## [53] tools_3.6.1        glue_1.3.1         hms_0.5.0          yaml_2.2.0        
-## [57] colorspace_1.4-1   classInt_0.4-2     rvest_0.3.4        knitr_1.24        
-## [61] haven_2.1.1
+## [21] rmarkdown_1.14     webshot_0.5.1      munsell_0.5.0      broom_0.5.2       
+## [25] compiler_3.6.1     modelr_0.1.5       xfun_0.8           pkgconfig_2.0.2   
+## [29] htmltools_0.3.6    tidyselect_0.2.5   gridExtra_2.3      codetools_0.2-16  
+## [33] viridisLite_0.3.0  crayon_1.3.4       withr_2.1.2        nlme_3.1-140      
+## [37] jsonlite_1.6       gtable_0.3.0       lifecycle_0.1.0    DBI_1.0.0         
+## [41] magrittr_1.5       units_0.6-5        scales_1.0.0       KernSmooth_2.23-15
+## [45] cli_1.1.0          stringi_1.4.3      xml2_1.2.2         generics_0.0.2    
+## [49] vctrs_0.2.0        tools_3.6.1        glue_1.3.1         hms_0.5.0         
+## [53] yaml_2.2.0         colorspace_1.4-1   classInt_0.4-2     rvest_0.3.4       
+## [57] knitr_1.24         haven_2.1.1
 </pre></div>
 <div class="source"><pre class="knitr r">    <span class="hl kwd">Sys.time</span><span class="hl std">()</span>
 </pre></div>
-<div class="output"><pre class="knitr r">## [1] &quot;2019-12-05 09:59:46 CST&quot;
+<div class="output"><pre class="knitr r">## [1] &quot;2019-12-05 13:11:34 CST&quot;
 </pre></div>
 </div></div>
 
